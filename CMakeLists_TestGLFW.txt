@@ -1,0 +1,29 @@
+cmake_minimum_required(VERSION 3.10)
+project(TestGLFW)
+
+# 设置C++标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# 设置包含目录
+include_directories(
+    include
+    include/GLFW
+    include/glad
+    include/KHR
+)
+
+# 添加源文件
+set(SOURCES
+    tests/test_glfw.cpp
+    third_party/glad.c
+)
+
+# 创建可执行文件
+add_executable(TestGLFW ${SOURCES})
+
+# 链接 GLFW 库
+target_link_libraries(TestGLFW PRIVATE third_party/libglfw3.a)
+
+# 指定编译器和链接器选项（如果需要的话）
+# set_target_properties(TestGLFW PROPERTIES LINK_FLAGS "-some_flag")
