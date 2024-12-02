@@ -12,7 +12,7 @@ TARGET = CelestialReverie
 
 SOURCES += \
     include/glm/detail/glm.cpp \
-    lib/glad.c
+    lib/glad.c \
     main.cpp \
     mainwindow.cpp \
     src/simulation/celestial_body.cpp \
