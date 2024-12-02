@@ -46,14 +46,15 @@ public:
         upd_algorithm = &T::get_instance();
     }
 
-    celestial_body* simulate(){
+    celestial_system* simulate(){
         if(frames.size() == 0 || current_time - frames.back()->time > save_interval) {
             frames.push_back(current_frame->duplicate());
         }
         sim_algorithm->simulate(current_frame);
         upd_algorithm->update(current_frame, time_step);
+        return current_frame;
     }
-    celestial_body* back_to(double time){
+    celestial_system* back_to(double time){
         return NULL;
     }
 };
