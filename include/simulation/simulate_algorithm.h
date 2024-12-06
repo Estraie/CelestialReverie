@@ -6,6 +6,12 @@
 # include <simulation/celestial_body.h>
 # include <simulation/celestial_system.h>
 
+class sim_constants {
+public:
+    static const double G;
+    static double get_G() { return G; }
+};
+
 class update_algorithm {
 public:
     virtual ~update_algorithm() = default;
@@ -56,7 +62,7 @@ private:
     static barnes_hut instance;
     glm::dvec3 upper_bound;
     glm::dvec3 lower_bound;
-
+    static constexpr double theta = 0.5;
     class node {
     public:
         celestial_body* body;
@@ -79,7 +85,7 @@ private:
     barnes_hut();
 
 public:
-    static int get_direction(glm::dvec3 pos, glm::dvec3 center);
+    static int get_direction(glm::dvec3& const pos, glm::dvec3& const center);
     void simulate(celestial_system*& system) override;
     static simulate_algorithm& get_instance();
 };

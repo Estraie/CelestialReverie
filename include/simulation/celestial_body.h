@@ -29,6 +29,6 @@ public:
     glm::f64 &ay = acceleration.y;
     glm::f64 &az = acceleration.z;
 
-    celestial_body* duplicate();
+    celestial_body* duplicate() const;
 };
 #endif // CELESTIAL_BODY_H
