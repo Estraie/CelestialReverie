@@ -52,12 +52,12 @@ celestial_system* celestial_reverie::back_to(double time) {
 }
 
 // Template implementations
-template<typename T>
-void celestial_reverie::set_simulate_algorithm() {
-    sim_algorithm = &T::get_instance();
-}
+// template<typename T>
+// void celestial_reverie::set_simulate_algorithm() {
+//     sim_algorithm = &T::get_instance();
+// }
 
-template<typename T>
-void celestial_reverie::set_update_algorithm() {
-    upd_algorithm = &T::get_instance();
-}
+// template<typename T>
+// void celestial_reverie::set_update_algorithm() {
+//     upd_algorithm = &T::get_instance();
+// }

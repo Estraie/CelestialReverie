@@ -73,6 +73,8 @@ void forward_euler::update(celestial_system*& system, double dt) {
 //     static simulate_algorithm& get_instance();
 // };
 
+simulate_algorithm::simulate_algorithm(update_algorithm& algorithm) : algorithm(algorithm) {}
+
 simulate_algorithm& pure_newtonian::get_instance() {
     static pure_newtonian instance;
     return instance;
@@ -120,6 +122,7 @@ barnes_hut::node::~node() {
     for(int i = 0; i < 8; i++){
         if(children[i] != NULL) {
             delete children[i];
+            children[i] = NULL;
         }
     }
 }
@@ -198,7 +201,7 @@ void barnes_hut::add_gravity(node*& root, celestial_body*& body) { // TODO
     }
 }
 
-int barnes_hut::get_direction(glm::dvec3& const pos, glm::dvec3& const center) {
+int barnes_hut::get_direction(glm::dvec3& pos, glm::dvec3& center) {
     int direction = 0;
     if(pos.x > center.x) 
         direction += 1;

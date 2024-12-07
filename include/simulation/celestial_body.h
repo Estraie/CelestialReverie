@@ -2,11 +2,18 @@
 #define CELESTIAL_BODY_H
 
 #include <glm/glm.hpp>
+#include <iostream>
 
 class celestial_body {
 public:
-    celestial_body();
-    virtual ~celestial_body();
+    celestial_body(
+        double mass = 0, 
+        double radius = 0, 
+        glm::dvec3 position = glm::dvec3(0), 
+        glm::dvec3 velocity = glm::dvec3(0), 
+        glm::dvec3 polar_position = glm::dvec3(0), 
+        glm::dvec3 acceleration = glm::dvec3(0)
+    );
     double mass;
     double radius;
     glm::dvec3 position;
@@ -30,5 +37,6 @@ public:
     glm::f64 &az = acceleration.z;
 
     celestial_body* duplicate() const;
+    friend std::ostream& operator<<(std::ostream& os, const celestial_body& cb);
 };
 #endif // CELESTIAL_BODY_H

@@ -29,10 +29,14 @@ public:
     void set_save_interval(double save_interval);
 
     template<typename T>
-    void set_simulate_algorithm();
+    void set_simulate_algorithm(){
+        sim_algorithm = &T::get_instance();
+    }
 
     template<typename T>
-    void set_update_algorithm();
+    void set_update_algorithm(){
+        upd_algorithm = &T::get_instance();
+    }
 
     celestial_system* simulate();
     celestial_system* back_to(double time);

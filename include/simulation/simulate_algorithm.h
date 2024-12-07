@@ -36,7 +36,7 @@ class simulate_algorithm {
 protected:
     update_algorithm& algorithm;
 
-    explicit simulate_algorithm(update_algorithm& algo);
+    explicit simulate_algorithm(update_algorithm& algo = forward_euler::get_instance());
 public:
     virtual ~simulate_algorithm() = default;
 
@@ -48,7 +48,7 @@ public:
 class pure_newtonian : public simulate_algorithm {
 private:
     static pure_newtonian instance;
-    pure_newtonian();
+    pure_newtonian() = default;
 
     void add_gravity(celestial_body*& body, celestial_body*& other);
 
@@ -82,10 +82,10 @@ private:
     void add_body(node* root, celestial_body* body);
     void add_gravity(node*& root, celestial_body*& body);
 
-    barnes_hut();
+    barnes_hut() = default;
 
 public:
-    static int get_direction(glm::dvec3& const pos, glm::dvec3& const center);
+    static int get_direction(glm::dvec3& pos, glm::dvec3& center);
     void simulate(celestial_system*& system) override;
     static simulate_algorithm& get_instance();
 };

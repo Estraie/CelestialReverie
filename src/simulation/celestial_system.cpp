@@ -32,6 +32,15 @@ celestial_system* celestial_system::duplicate(){
     return new_system;
 }
 
+std::ostream& operator<<(std::ostream& os, celestial_system& sys){
+    os << "***** Celestial System *****" << std::endl;
+    os << "Time: " << sys.get_time() << std::endl;
+    for(auto body : sys.bodies){
+        os << *body;
+    }
+    return os;
+}
+
 // class celestial_system{
 // public:
 //     double time;

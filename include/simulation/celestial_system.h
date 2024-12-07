@@ -1,3 +1,6 @@
+#ifndef CELESTIAL_SYSTEM_H
+#define CELESTIAL_SYSTEM_H
+
 # include <vector>
 # include "celestial_body.h"
 
@@ -12,4 +15,6 @@ public:
     void set_time(double time);
     double get_time();
     celestial_system* duplicate();
+    friend std::ostream& operator<<(std::ostream& os, celestial_system& system);
 };
+#endif // CELESTIAL_SYSTEM_H
