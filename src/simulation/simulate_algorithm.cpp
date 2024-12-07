@@ -186,7 +186,7 @@ void barnes_hut::add_gravity(node*& root, celestial_body*& body) { // TODO
     if(root->body == NULL) {
         if(glm::length(body->position - root->barycenter) > glm::length(root->semi_edge.x)) {
             body->acceleration += 
-                sim_constants::get_G() * root->mass * (body->position - root->barycenter) / 
+                sim_constants::get_G() * root->mass * (root->barycenter - body->position) / 
                 glm::dot(body->position - root->barycenter, body->position - root->barycenter);
         }
         else {
@@ -194,9 +194,9 @@ void barnes_hut::add_gravity(node*& root, celestial_body*& body) { // TODO
                 add_gravity(root->children[i], body);
             }
         }
-    } else {
+    } else if (root->body != body){
         body->acceleration += 
-            sim_constants::get_G() * root->mass * (body->position - root->body->position) / 
+            sim_constants::get_G() * root->mass * (root->body->position - body->position) / 
             glm::dot(body->position - root->body->position, body->position - root->body->position);
     }
 }
