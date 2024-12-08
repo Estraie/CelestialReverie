@@ -40,6 +40,7 @@ public:
 
     celestial_system* simulate();
     celestial_system* back_to(double time);
+    celestial_system* get_current_frame();
 };
 
 #endif // CELESTIAL_REVERIE_H

@@ -51,6 +51,10 @@ celestial_system* celestial_reverie::back_to(double time) {
     return nullptr;
 }
 
+celestial_system* celestial_reverie::get_current_frame() {
+    return current_frame;
+}
+
 // Template implementations
 // template<typename T>
 // void celestial_reverie::set_simulate_algorithm() {

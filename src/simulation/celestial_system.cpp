@@ -8,9 +8,7 @@ celestial_system::~celestial_system(){
     }
 }
 
-celestial_system::celestial_system(){
-    time = 0.0;
-}
+celestial_system::celestial_system(double time) : time(time){}
 
 void celestial_system::add_body(celestial_body* body){
     bodies.push_back(body);

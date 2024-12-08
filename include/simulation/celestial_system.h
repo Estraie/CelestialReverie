@@ -7,7 +7,7 @@
 class celestial_system{
 public:
     double time;
-    celestial_system();
+    celestial_system(double time = 0.0);
     ~celestial_system();
     std::vector<celestial_body*> bodies;
     void add_body(celestial_body* body);

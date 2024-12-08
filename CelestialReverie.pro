@@ -16,12 +16,18 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     src/simulation/celestial_body.cpp \
+    src/simulation/celestial_system.cpp \
+    src/simulation/celestial_reverie.cpp \
+    src/simulation/simulate_algorithm.cpp \
+    src/rendering/celestialGLWidget.cpp
     
 include(include/include.pri)
     
 win32: LIBS += -L$$PWD/lib/ -lglfw3 -lgdi32    
 
 HEADERS += \
+    include/rendering/camera.h \
+    include/rendering/celestialGLWidget.h \
     mainwindow.h
 
 FORMS += \

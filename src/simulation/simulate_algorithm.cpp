@@ -27,8 +27,9 @@ void forward_euler::update(celestial_body*& body, double dt) {
     body->position += body->velocity * dt;
 }
 
-void forward_euler::update(celestial_system*& system, double dt) {
-    for(auto& body : system->bodies){
+void forward_euler::update(celestial_system*& sys, double dt) {
+    sys->set_time(sys->get_time() + dt);
+    for(auto& body : sys->bodies){
         update(body, dt);
     }
 }
@@ -89,12 +90,15 @@ void pure_newtonian::add_gravity(celestial_body*& body, celestial_body*& other) 
     auto dist_vec = other->position- body->position;
     double G = sim_constants::get_G();
     body->acceleration += 
-        G * other->mass * dist_vec / glm::dot(dist_vec, dist_vec);
+        G * other -> mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);
     other->acceleration -= 
-        G * body->mass * dist_vec / glm::dot(dist_vec, dist_vec);   
+        G * body->mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);   
 }
 
 void pure_newtonian::simulate(celestial_system*& system) {
+    for(auto& body : system->bodies){
+        body->acceleration = glm::dvec3(0.0);
+    }
     for(int i = 0; i < system->bodies.size(); i++){
         for(int j = i + 1; j < system->bodies.size(); j++){
             add_gravity(system->bodies[i], system->bodies[j]);
@@ -186,7 +190,7 @@ void barnes_hut::add_gravity(node*& root, celestial_body*& body) { // TODO
     if(root->body == NULL) {
         if(glm::length(body->position - root->barycenter) > glm::length(root->semi_edge.x)) {
             body->acceleration += 
-                sim_constants::get_G() * root->mass * (root->barycenter - body->position) / 
+                sim_constants::get_G() * root->mass * glm::normalize(root->barycenter - body->position) / 
                 glm::dot(body->position - root->barycenter, body->position - root->barycenter);
         }
         else {
@@ -196,7 +200,7 @@ void barnes_hut::add_gravity(node*& root, celestial_body*& body) { // TODO
         }
     } else if (root->body != body){
         body->acceleration += 
-            sim_constants::get_G() * root->mass * (root->body->position - body->position) / 
+            sim_constants::get_G() * root->mass * glm::normalize(root->body->position - body->position) / 
             glm::dot(body->position - root->body->position, body->position - root->body->position);
     }
 }
@@ -223,6 +227,7 @@ void barnes_hut::simulate(celestial_system*& system) {
         lower_bound.x = std::min(lower_bound.x, body->position.x);
         lower_bound.y = std::min(lower_bound.y, body->position.y);
         lower_bound.z = std::min(lower_bound.z, body->position.z);
+        body->acceleration = glm::dvec3(0.0);
     }
     root->center = (upper_bound + lower_bound) / 2.0;
     root->semi_edge = (upper_bound - lower_bound) / 2.0;
