@@ -6,6 +6,8 @@
 
 class celestial_body {
 public:
+    const double c = 299792458;
+    
     celestial_body(
         double mass = 0, 
         double radius = 0, 
@@ -16,6 +18,8 @@ public:
     );
     double mass;
     double radius;
+    
+
     glm::dvec3 position;
     glm::f64 &x = position.x;
     glm::f64 &y = position.y;
@@ -37,6 +41,13 @@ public:
     glm::f64 &az = acceleration.z;
 
     celestial_body* duplicate() const;
+
     friend std::ostream& operator<<(std::ostream& os, const celestial_body& cb);
+
+    // Special Relativity fix
+    double gamma;
+    double mass_rela;
+    void sr_update();
+
 };
 #endif // CELESTIAL_BODY_H

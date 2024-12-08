@@ -9,7 +9,9 @@
 class sim_constants {
 public:
     static const double G;
+    static const double Ray_Speed;
     static double get_G() { return G; }
+    static double get_c() { return Ray_Speed; }
 };
 
 class update_algorithm {
@@ -86,6 +88,19 @@ private:
 
 public:
     static int get_direction(glm::dvec3& pos, glm::dvec3& center);
+    void simulate(celestial_system*& system) override;
+    static simulate_algorithm& get_instance();
+};
+
+class pure_newtonian_sr : public simulate_algorithm {
+private:
+    static pure_newtonian_sr instance;
+    pure_newtonian_sr() = default;
+
+    void add_gravity(celestial_body*& body, celestial_body*& other);
+    void cal_acceleration(celestial_body*& body);
+
+public:
     void simulate(celestial_system*& system) override;
     static simulate_algorithm& get_instance();
 };
