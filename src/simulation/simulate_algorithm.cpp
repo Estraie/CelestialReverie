@@ -16,6 +16,7 @@
 //     } 
 // };
 const double sim_constants::G = 6.67408e-11;
+const double sim_constants::Ray_Speed = 299792458;
 
 forward_euler& forward_euler::get_instance() {
     static forward_euler instance;
@@ -89,9 +90,9 @@ void pure_newtonian::add_gravity(celestial_body*& body, celestial_body*& other) 
     auto dist_vec = other->position- body->position;
     double G = sim_constants::get_G();
     body->acceleration += 
-        G * other->mass * dist_vec / glm::dot(dist_vec, dist_vec);
+        G * other->mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);
     other->acceleration -= 
-        G * body->mass * dist_vec / glm::dot(dist_vec, dist_vec);   
+        G * body->mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);   
 }
 
 void pure_newtonian::simulate(celestial_system*& system) {
@@ -244,9 +245,9 @@ void barnes_hut::simulate(celestial_system*& system) {
 //         auto dist_vec = other->position- body->position;
 //         double G = sim_constants::get_G();
 //         body->acceleration += 
-//             G * other->mass * dist_vec / glm::dot(dist_vec, dist_vec);
+//             G * other->mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);
 //         other->acceleration -= 
-//             G * body->mass * dist_vec / glm::dot(dist_vec, dist_vec);   
+//             G * body->mass * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);   
 //     }
 
 //     void simulate(celestial_system*& system) override{
@@ -410,3 +411,45 @@ void barnes_hut::simulate(celestial_system*& system) {
 //         return instance;
 //     }
 // };
+
+// special relativity fix
+simulate_algorithm& pure_newtonian_sr::get_instance() {
+    static pure_newtonian_sr instance;
+    return instance;
+}
+
+void pure_newtonian_sr::add_gravity(celestial_body*& body, celestial_body*& other) {
+
+    auto dist_vec = other->position- body->position;
+    double G = sim_constants::get_G();
+    
+    // calculate init acceleration 
+    body->acceleration += 
+        G * other->mass_rela * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);
+    other->acceleration -= 
+        G * body->mass_rela * glm::normalize(dist_vec) / glm::dot(dist_vec, dist_vec);   
+
+}
+
+void pure_newtonian_sr::cal_acceleration(celestial_body*& body){
+    double C = sim_constants::get_c();
+    body->acceleration = 
+        body->acceleration * body->gamma - 
+        glm::dot(body->velocity, body->acceleration) / (2 * C * C * body->gamma)*
+        body->velocity;
+}
+
+void pure_newtonian_sr::simulate(celestial_system*& system) {
+    for(int i = 0; i < system->bodies.size(); i++)
+        system->bodies[i]->sr_update();
+
+    for(int i = 0; i < system->bodies.size(); i++){
+        for(int j = i + 1; j < system->bodies.size(); j++){
+            add_gravity(system->bodies[i], system->bodies[j]);
+        }
+    }
+
+    for(int i = 0; i < system->bodies.size(); i++)
+        cal_acceleration(system->bodies[i]);
+    
+}

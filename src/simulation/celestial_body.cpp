@@ -74,3 +74,16 @@ std::ostream& operator<<(std::ostream& os, const celestial_body& body) {
 //     planet() {}
 //     virtual ~planet() {}
 // };
+
+void celestial_body::sr_update(){
+
+    acceleration.x = 0;
+    acceleration.y = 0;
+    acceleration.z = 0;
+
+    double v = glm::length(velocity);
+    
+    gamma = 1/glm::sqrt(1 - glm::pow(v/c, 2));
+
+    mass_rela = mass  / gamma;
+}
