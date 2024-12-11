@@ -83,10 +83,10 @@ void celestial_gl_widget::initializeGL() {
     vao = vbo = ebo = celestial_body_vao = 0;
 
     // _______________________________ Initialize the Simulation _______________________________
-    celestial_body* a = new celestial_body(1.0e10, 1, {10, 0, 0}, {0, 0, 10});
-    celestial_body* b = new celestial_body(1.0e10, 1, {-10, 0, 0}, {0, 0, -10});
-    celestial_body* c = new celestial_body(1.0e10, 1, {0, 0, 10}, {-10, 0, 0});
-    celestial_body* d = new celestial_body(1.0e10, 1, {0, 0, -10}, {10, 0, 0});
+    celestial_body* a = new celestial_body(5.0e10, 1, {10, 0, -50}, {0, 1, 0});
+    celestial_body* b = new celestial_body(6.0e10, 2, {-10, 0, -50}, {0, -1, 0});
+    celestial_body* c = new celestial_body(7.0e10, 3, {0, 10, -50}, {-1, 0, 0});
+    celestial_body* d = new celestial_body(80.0e10, 4, {0, -10, -50}, {1, 0, 0});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
@@ -103,9 +103,9 @@ void celestial_gl_widget::initializeGL() {
     set_vec3("albedo", 0.5, 0.0, 0.0);
     set_float("ao", 1.0);
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update_sim()));
-    timer -> start(20);
+//    timer = new QTimer(this);
+//    connect(timer, SIGNAL(timeout()), this, SLOT(update_sim()));
+//    timer -> start(20);
 }
 
 void celestial_gl_widget::paintGL() {
@@ -130,6 +130,7 @@ void celestial_gl_widget::render_celestial_system(celestial_system* sys) {
 void celestial_gl_widget::render_celestial_body(celestial_body* body) {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(body->position));
+    model = glm::scale(model, glm::vec3(body->radius));
     set_mat4("model", model);
     set_mat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
     if(celestial_body_vao == 0) {
@@ -213,6 +214,18 @@ void celestial_gl_widget::update_sim(){
     sim.simulate();
     update();
 }
+
+double celestial_gl_widget::get_current_time(){
+    return sim.get_current_frame()->get_time();
+}
+
+//void celestial_gl_widget::toggle_simulation(){
+//    if (timer->isActive()) {
+//        timer->stop();
+//    } else {
+//        timer->start(20);
+//    }
+//}
 
 celestial_gl_widget::~celestial_gl_widget() {
     makeCurrent();

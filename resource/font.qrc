@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>en-us.ttf</file>
+    </qresource>
+</RCC>

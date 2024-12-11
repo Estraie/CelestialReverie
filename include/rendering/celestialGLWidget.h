@@ -18,6 +18,7 @@ class celestial_gl_widget : public QOpenGLWidget, protected QOpenGLFunctions_3_3
     Q_OBJECT
 public:
     explicit celestial_gl_widget(QWidget *parent = nullptr);
+    double get_current_time();
     ~celestial_gl_widget();
 protected:
     virtual void initializeGL() override;
@@ -45,8 +46,9 @@ protected:
 signals:
     void timeout();
 
-private slots:
+public slots:
     void update_sim();
+//    void toggle_simulation();
 };
 
 # endif // CELESTIAL_GL_WIDGET_H

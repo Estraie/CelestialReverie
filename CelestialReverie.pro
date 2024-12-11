@@ -41,3 +41,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     include/glm/CMakeLists.txt \
     include/glm/copying.txt
+
+RESOURCES += \
+    resource/font.qrc

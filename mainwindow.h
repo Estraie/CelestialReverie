@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <rendering/celestialGLWidget.h>
+#include <qtimer.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,9 +15,16 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void toggle_simulation();
+
     ~MainWindow();
 
+signals:
+    void my_timeout();
+private slots:
+    void update_simulation();
 private:
     Ui::MainWindow *ui;
+    QTimer* timer;
 };
 #endif // MAINWINDOW_H

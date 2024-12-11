@@ -6,41 +6,107 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QPushButton" name="toggle_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>121</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pause/Resume</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontal_slider">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
-      <width>871</width>
-      <height>681</height>
+      <y>630</y>
+      <width>1001</width>
+      <height>22</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="celestial_gl_widget" name="openGLWidget"/>
-     </item>
-    </layout>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
    </widget>
+   <widget class="celestial_gl_widget" name="celestial_widget">
+    <property name="geometry">
+     <rect>
+      <x>1</x>
+      <y>1</y>
+      <width>1000</width>
+      <height>700</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>900</width>
+      <height>674</height>
+     </size>
+    </property>
+   </widget>
+   <zorder>celestial_widget</zorder>
+   <zorder>toggle_button</zorder>
+   <zorder>horizontal_slider</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1000</width>
      <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="actionLoad"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionBrute_Force"/>
+    <addaction name="actionBarnes_Hut"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionBrute_Force">
+   <property name="text">
+    <string>Brute Force</string>
+   </property>
+  </action>
+  <action name="actionBarnes_Hut">
+   <property name="text">
+    <string>Barnes-Hut</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

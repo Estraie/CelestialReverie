@@ -1,4 +1,8 @@
 #include <simulation/celestial_reverie.h>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 celestial_reverie::celestial_reverie() 
     : current_time(0), time_step(1), save_interval(100) {
@@ -15,13 +19,73 @@ celestial_reverie::~celestial_reverie() {
 }
 
 bool celestial_reverie::load_celestial_system(const std::string& filename) {
-    // Implementation here
-    return false;
+    std::ifstream infile(filename);
+    if (!infile.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return false;
+    }
+
+    for(auto frame : frames) {
+        delete frame;
+        frame = nullptr;
+    }
+    frames.clear();
+    if(current_frame != nullptr) {
+        delete current_frame;
+        current_frame = nullptr;
+    }
+
+    std::string line;
+    while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        double mass, radius;
+        glm::dvec3 position, velocity, polar_position, acceleration;
+
+        char delimiter;
+        if (
+            iss >> 
+                mass >> delimiter >> radius >> delimiter >>
+                position.x >> delimiter >> position.y >> delimiter >> position.z >> delimiter >>
+                velocity.x >> delimiter >> velocity.y >> delimiter >> velocity.z
+            //  >> delimiter >>
+            // polar_position.x >> delimiter >> polar_position.y >> delimiter >> polar_position.z >> delimiter >>
+            // acceleration.x >> delimiter >> acceleration.y >> delimiter >> acceleration.z
+        ) {
+            celestial_body* body = new celestial_body(mass, radius, position, velocity, polar_position, acceleration);
+            current_frame->bodies.push_back(body);
+        } else {
+            std::cerr << "Error parsing line: " << line << std::endl;
+            infile.close();
+            return false;
+        }
+    }
+
+    infile.close();
+
+    frames.push_back(current_frame);
+    return true;
 }
 
 bool celestial_reverie::dump_celestial_system(const std::string& filename) {
-    // Implementation here
-    return false;
+    std::ofstream outfile(filename);
+    if (!outfile.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return false;
+    }
+
+    for (const auto& body : current_frame->bodies) {
+        outfile 
+            << body->mass << ',' << body->radius << ','
+            << body->position.x << ',' << body->position.y << ',' << body->position.z << ','
+            << body->velocity.x << ',' << body->velocity.y << ',' << body->velocity.z 
+            //  << ','
+            //  << body->polar_position.x << ',' << body->polar_position.y << ',' << body->polar_position.z << ','
+            //  << body->acceleration.x << ',' << body->acceleration.y << ',' << body->acceleration.z
+            << '\n';
+    }
+
+    outfile.close();
+    return true;
 }
 
 bool celestial_reverie::add_celestial_body(celestial_body* body) {
@@ -43,12 +107,30 @@ celestial_system* celestial_reverie::simulate() {
     }
     sim_algorithm->simulate(current_frame);
     upd_algorithm->update(current_frame, time_step);
+    current_time += time_step;
     return current_frame;
 }
 
 celestial_system* celestial_reverie::back_to(double time) {
-    // Implementation here
-    return nullptr;
+
+    auto it = std::lower_bound(frames.begin(), frames.end(), time, [](celestial_system* frame, double time) {
+        return frame->time < time;
+    });
+
+    if (it == frames.begin()) {
+        return nullptr;
+    }
+
+    --it;
+
+    current_frame = *it;
+    current_time = current_frame->time;
+
+    while (current_time < time) {
+        simulate();
+    }
+
+    return current_frame;
 }
 
 celestial_system* celestial_reverie::get_current_frame() {
