@@ -34,6 +34,7 @@ bool celestial_reverie::load_celestial_system(const std::string& filename) {
         delete current_frame;
         current_frame = nullptr;
     }
+    current_frame = new celestial_system();
 
     std::string line;
     while (std::getline(infile, line)) {
@@ -53,11 +54,13 @@ bool celestial_reverie::load_celestial_system(const std::string& filename) {
         ) {
             celestial_body* body = new celestial_body(mass, radius, position, velocity, polar_position, acceleration);
             current_frame->bodies.push_back(body);
+            return true;
         } else {
             std::cerr << "Error parsing line: " << line << std::endl;
             infile.close();
             return false;
         }
+        return true;
     }
 
     infile.close();
@@ -113,17 +116,27 @@ celestial_system* celestial_reverie::simulate() {
 
 celestial_system* celestial_reverie::back_to(double time) {
 
+    if(current_frame) {
+        delete current_frame;
+        current_frame = nullptr;
+    }
     auto it = std::lower_bound(frames.begin(), frames.end(), time, [](celestial_system* frame, double time) {
         return frame->time < time;
     });
 
     if (it == frames.begin()) {
-        return nullptr;
+//        std::cout << "Null???\n";
+
+        current_frame = frames[0]->duplicate();
+        return current_frame;
     }
 
     --it;
 
-    current_frame = *it;
+//    std::cout << "Original Frame: \n" << *current_frame;
+
+    current_frame = (*it)->duplicate();
+//    std::cout << "Target Frame: \n" << *current_frame;
     current_time = current_frame->time;
 
     while (current_time < time) {

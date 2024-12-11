@@ -121,7 +121,7 @@ void celestial_gl_widget::paintGL() {
 }
 
 void celestial_gl_widget::render_celestial_system(celestial_system* sys) {
-    std::cout << *sys << std::endl;
+//    std::cout << *sys << std::endl;
     for (auto& body : sys->bodies) {
         render_celestial_body(body);
     }
@@ -219,13 +219,10 @@ double celestial_gl_widget::get_current_time(){
     return sim.get_current_frame()->get_time();
 }
 
-//void celestial_gl_widget::toggle_simulation(){
-//    if (timer->isActive()) {
-//        timer->stop();
-//    } else {
-//        timer->start(20);
-//    }
-//}
+void celestial_gl_widget::set_time(double time){
+    sim.back_to(time);
+    update();
+}
 
 celestial_gl_widget::~celestial_gl_widget() {
     makeCurrent();

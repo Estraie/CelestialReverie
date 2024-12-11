@@ -16,6 +16,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     void toggle_simulation();
+    void time_change();
+    void slider_value_change();
 
     ~MainWindow();
 

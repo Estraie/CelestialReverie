@@ -19,6 +19,7 @@ class celestial_gl_widget : public QOpenGLWidget, protected QOpenGLFunctions_3_3
 public:
     explicit celestial_gl_widget(QWidget *parent = nullptr);
     double get_current_time();
+    void set_time(double time);
     ~celestial_gl_widget();
 protected:
     virtual void initializeGL() override;
