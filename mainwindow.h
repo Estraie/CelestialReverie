@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <rendering/celestialGLWidget.h>
 #include <qtimer.h>
 
@@ -15,9 +16,11 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    void toggle_simulation();
+//    void toggle_simulation();
     void time_change();
     void slider_value_change();
+//    void dump_frame();
+//    void load_frame();
 
     ~MainWindow();
 
@@ -27,6 +30,6 @@ private slots:
     void update_simulation();
 private:
     Ui::MainWindow *ui;
-    QTimer* timer;
+//    QTimer* timer;
 };
 #endif // MAINWINDOW_H

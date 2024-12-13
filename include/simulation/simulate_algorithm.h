@@ -34,31 +34,31 @@ private:
 
 class simulate_algorithm {
 protected:
-    update_algorithm& algorithm;
+    // update_algorithm& algorithm;
 
-    explicit simulate_algorithm(update_algorithm& algo = forward_euler::get_instance());
+    explicit simulate_algorithm();
 public:
     virtual ~simulate_algorithm() = default;
 
-    void set_update_algorithm(update_algorithm& new_algorithm);
+    // void set_update_algorithm(update_algorithm& new_algorithm);
     virtual void simulate(celestial_system*& system) = 0;
     static simulate_algorithm& get_instance();
 };
 
 class pure_newtonian : public simulate_algorithm {
-private:
+protected:
     static pure_newtonian instance;
     pure_newtonian() = default;
 
-    void add_gravity(celestial_body*& body, celestial_body*& other);
+    virtual void add_gravity(celestial_body*& body, celestial_body*& other);
 
 public:
-    void simulate(celestial_system*& system) override;
+    virtual void simulate(celestial_system*& system) override;
     static simulate_algorithm& get_instance();
 };
 
 class barnes_hut : public simulate_algorithm {
-private:
+protected:
     static barnes_hut instance;
     glm::dvec3 upper_bound;
     glm::dvec3 lower_bound;
@@ -80,13 +80,13 @@ private:
 
     glm::dvec3 get_next_center(node* node, int direction);
     void add_body(node* root, celestial_body* body);
-    void add_gravity(node*& root, celestial_body*& body);
+    virtual void add_gravity(node*& root, celestial_body*& body);
 
     barnes_hut() = default;
 
 public:
     static int get_direction(glm::dvec3& pos, glm::dvec3& center);
-    void simulate(celestial_system*& system) override;
+    virtual void simulate(celestial_system*& system) override;
     static simulate_algorithm& get_instance();
 };
 

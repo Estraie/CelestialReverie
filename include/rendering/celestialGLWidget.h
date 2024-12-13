@@ -4,6 +4,15 @@
 # include <QOpenGLWidget>
 # include <QOpenGLFunctions_3_3_Core>
 # include <qtimer.h>
+# include <QKeyEvent>
+# include <QMouseEvent>
+# include <QWheelEvent>
+# include <QFileDialog>
+# include <QMessageBox>
+# include <QDateTime>
+# include <QDebug>
+#include <iostream>
+#include <sstream>
 
 # include <glm/glm.hpp>
 # include <glm/gtc/matrix_transform.hpp>
@@ -21,10 +30,18 @@ public:
     double get_current_time();
     void set_time(double time);
     ~celestial_gl_widget();
+    QTimer* timer;
+
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int w, int h) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
     void render_celestial_system(celestial_system* sys);
     void render_celestial_body(celestial_body* body);
     celestial_reverie sim;
@@ -35,8 +52,6 @@ protected:
     unsigned int ebo;
     unsigned int celestial_body_vao;
     unsigned int index_count;
-
-    QTimer* timer;
 
     void set_float(const char* name, float value);
     void set_vec3(const char* name, float x, float y, float z);
@@ -49,7 +64,11 @@ signals:
 
 public slots:
     void update_sim();
-//    void toggle_simulation();
+    void set_pure_newtonian();
+    void set_barnes_hut();
+    void toggle_simulation();
+    void load_csv();
+    void save_csv();
 };
 
 # endif // CELESTIAL_GL_WIDGET_H

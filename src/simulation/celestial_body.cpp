@@ -24,10 +24,10 @@ celestial_body* celestial_body::duplicate() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const celestial_body& body) {
-    os << "Mass: " << body.mass << std::endl;
-    os << "Radius: " << body.radius << std::endl;
-    os << "Position: " << body.position.x << ", " << body.position.y << ", " << body.position.z << std::endl;
-    os << "Velocity: " << body.velocity.x << ", " << body.velocity.y << ", " << body.velocity.z << std::endl;
-    os << std::endl;
+    os << body.mass << ',';
+    os << body.radius << ',';
+    os << body.position.x << ',' << body.position.y << ',' << body.position.z << ',';
+    os << body.velocity.x << ',' << body.velocity.y << ',' << body.velocity.z << std::endl;
+//    os << std::endl;
     return os;
 }

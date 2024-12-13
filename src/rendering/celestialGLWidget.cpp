@@ -1,4 +1,5 @@
 # include <rendering/celestialGLWidget.h>
+
 // # include <shader.h>
 
 const char* vertex_shader = 
@@ -83,25 +84,33 @@ void celestial_gl_widget::initializeGL() {
     vao = vbo = ebo = celestial_body_vao = 0;
 
     // _______________________________ Initialize the Simulation _______________________________
-    celestial_body* a = new celestial_body(5.0e10, 1, {10, 0, -50}, {0, 1, 0});
-    celestial_body* b = new celestial_body(6.0e10, 2, {-10, 0, -50}, {0, -1, 0});
-    celestial_body* c = new celestial_body(7.0e10, 3, {0, 10, -50}, {-1, 0, 0});
-    celestial_body* d = new celestial_body(80.0e10, 4, {0, -10, -50}, {1, 0, 0});
+    celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
+    celestial_body* b = new celestial_body(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
+    celestial_body* c = new celestial_body(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
+    celestial_body* d = new celestial_body(80.0e10, 350, {0, -10, -500}, {1, 0, -5000});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
     sim.add_celestial_body(d);
     sim.set_time_step(0.01);
+    sim.set_simulate_algorithm<barnes_hut>();
+//    sim.set_simulate_algorithm<pure_newtonian>();
+//    barnes_hut::get_instance();
+    std::cout << "Initialized!\n";
 
     // _______________________________   Initialize the Camera   _______________________________
     camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width() / (float)height(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width() / (float)height(), 0.1f, 1e8f);
     glUseProgram(shader_program);
     set_mat4("projection", projection);
 
     glUseProgram(shader_program);
-    set_vec3("albedo", 0.5, 0.0, 0.0);
+    set_vec3("albedo", 0.5, 0.0, 0.5);
     set_float("ao", 1.0);
+
+    // ___________________________________   Set Focusable   ____________________________________
+    setFocusPolicy(Qt::WheelFocus);
+    setMouseTracking(true);
 
 //    timer = new QTimer(this);
 //    connect(timer, SIGNAL(timeout()), this, SLOT(update_sim()));
@@ -142,8 +151,8 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
         std::vector<glm::vec2> texCoords;
         std::vector<unsigned int> indices;
 
-        const unsigned int X_SEGMENTS = 10;
-        const unsigned int Y_SEGMENTS = 10;
+        const unsigned int X_SEGMENTS = 64;
+        const unsigned int Y_SEGMENTS = 64;
         const float PI = 3.14159265359;
         for(unsigned int i = 0; i <= X_SEGMENTS; ++i) {
             for(unsigned int j = 0; j <= Y_SEGMENTS; ++j) {
@@ -234,6 +243,139 @@ celestial_gl_widget::~celestial_gl_widget() {
     doneCurrent();
 }
 
+void celestial_gl_widget::keyPressEvent(QKeyEvent *event) {
+    float deltaTime = 0.1f;
+    switch (event->key()) {
+        case Qt::Key_W:
+            camera.ProcessKeyboard(FORWARD, deltaTime);
+            break;
+        case Qt::Key_S:
+            camera.ProcessKeyboard(BACKWARD, deltaTime);
+            break;
+        case Qt::Key_A:
+            camera.ProcessKeyboard(LEFT, deltaTime);
+            break;
+        case Qt::Key_D:
+            camera.ProcessKeyboard(RIGHT, deltaTime);
+            break;
+        case Qt::Key_Alt:
+            setCursor(Qt::ArrowCursor);
+            break;
+        default:
+            QWidget::keyPressEvent(event);
+    }
+}
+
+void celestial_gl_widget::keyReleaseEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Alt) {
+        setCursor(Qt::BlankCursor);
+        QCursor::setPos(mapToGlobal(rect().center()));
+    }
+    QWidget::keyReleaseEvent(event);
+}
+
+void celestial_gl_widget::focusInEvent(QFocusEvent *event) {
+    if(timer->isActive()){
+        setCursor(Qt::BlankCursor);
+        QCursor::setPos(mapToGlobal(rect().center()));
+        QWidget::focusInEvent(event);
+    }
+}
+
+void celestial_gl_widget::focusOutEvent(QFocusEvent *event) {
+    setCursor(Qt::ArrowCursor);
+    QWidget::focusOutEvent(event);
+}
+
+void celestial_gl_widget::mouseMoveEvent(QMouseEvent *event) {
+    if (cursor().shape() == Qt::BlankCursor) {
+        QPoint currentMousePos = event->pos();
+        float xOffset = currentMousePos.x() - rect().center().x();
+        float yOffset = rect().center().y() - currentMousePos.y();
+        camera.ProcessMouseMovement(xOffset, yOffset);
+        QCursor::setPos(mapToGlobal(rect().center()));
+    }
+
+    QWidget::mouseMoveEvent(event);
+}
+
+
+void celestial_gl_widget::wheelEvent(QWheelEvent *event) {
+    float yOffset = event->angleDelta().y() / 120.0f;
+    camera.ProcessMouseScroll(yOffset);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width() / (float)height(), 0.1f, 1e8f);
+    glUseProgram(shader_program);
+    set_mat4("projection", projection);
+}
+
+void celestial_gl_widget::set_pure_newtonian() {
+    sim.set_simulate_algorithm<pure_newtonian>();
+}
+
+void celestial_gl_widget::set_barnes_hut() {
+    sim.set_simulate_algorithm<barnes_hut>();
+}
+
+void celestial_gl_widget::toggle_simulation(){
+    if(timer->isActive()){
+        timer->stop();
+    }else{
+        timer->start(20);
+    }
+}
+
+QString toQString(celestial_system& sys) {
+    std::ostringstream oss;
+    oss << sys;
+    return QString::fromStdString(oss.str());
+}
+
+void celestial_gl_widget::save_csv() {
+    if(timer->isActive()){
+        timer->stop();
+    }
+
+    QString filename = QFileDialog::getSaveFileName(
+        this,
+        "Save current frame",
+        QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss") + ".csv",
+        "Comma Separated Values(*.csv)"
+    );
+    if (!filename.isEmpty()) {
+        QFile file(filename);
+
+        if (file.exists()) {
+            int ret = QMessageBox::warning(
+                nullptr,
+                "File exists",
+                "File exists, do cover?",
+                QMessageBox::Yes | QMessageBox::No
+            );
+
+            if (ret == QMessageBox::No) {
+                qDebug() << "Cancelled covering.";
+                return;
+            }
+        }
+
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&file);
+//            out << "Sample content.\n";
+            out << toQString(*sim.get_current_frame());
+            file.close();
+            QMessageBox::information(nullptr, "Information", "Successfully saved!");
+        } else {
+            QMessageBox::critical(nullptr, "Error", "Cannot write target file!");
+        }
+    } else {
+        qDebug() << "Cancelled saving.";
+    }
+}
+
+void celestial_gl_widget::load_csv() {
+
+}
+
 void celestial_gl_widget::set_float(const char* name, float value) {
     glUniform1f(glGetUniformLocation(shader_program, name), value);
 }
@@ -249,4 +391,5 @@ void celestial_gl_widget::set_mat3(const char* name, const glm::mat3& mat) {
 void celestial_gl_widget::set_mat4(const char* name, const glm::mat4& mat) {
     glUniformMatrix4fv(glGetUniformLocation(shader_program, name), 1, GL_FALSE, &mat[0][0]);
 }
+
 

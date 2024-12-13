@@ -115,7 +115,8 @@ celestial_system* celestial_reverie::simulate() {
 }
 
 celestial_system* celestial_reverie::back_to(double time) {
-
+//    std::cout << "Current time: " << current_time << "; Back to " << time << "\n";
+//    return current_frame;
     if(current_frame) {
         delete current_frame;
         current_frame = nullptr;

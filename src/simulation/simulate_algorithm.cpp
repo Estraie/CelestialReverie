@@ -34,7 +34,9 @@ void forward_euler::update(celestial_system*& sys, double dt) {
     }
 }
 
-simulate_algorithm::simulate_algorithm(update_algorithm& algorithm) : algorithm(algorithm) {}
+// simulate_algorithm::simulate_algorithm(update_algorithm& algorithm) : algorithm(algorithm) {}
+
+simulate_algorithm::simulate_algorithm(){}
 
 simulate_algorithm& pure_newtonian::get_instance() {
     static pure_newtonian instance;
@@ -108,24 +110,28 @@ glm::dvec3 barnes_hut::get_next_center(node* node, int direction) {
 
 void barnes_hut::add_body(node* root, celestial_body* body) {
     int direction;
-
+    std::cout << "Adding " << *body << "\n";
     // Case NULL node
     if(root->mass == 0.0) {
+        std::cout << "Adding to current Node\n";
         root->body = body;
         root->mass = body->mass;
         root->barycenter = body->position;
         return;
     }
     else {
-        direction = get_direction(root->body->position, root->center);
-        if(root->children[direction] == NULL) {
-            root->children[direction] = new node(root->body, get_next_center(root, direction), root);
-            root->children[direction]->semi_edge = root->semi_edge / 2.0;
+        std::cout << "Adding to current Node\n";
+        if(root->body != NULL) {
+            direction = get_direction(root->body->position, root->center);
+            if(root->children[direction] == NULL) {
+                root->children[direction] = new node(root->body, get_next_center(root, direction), root);
+                root->children[direction]->semi_edge = root->semi_edge / 2.0;
+            }
+            else {
+                add_body(root->children[direction], root->body);
+            }
+            root->body = NULL;
         }
-        else {
-            add_body(root->children[direction], root->body);
-        }
-        root->body = NULL;
     }
 
     // Case leaf node

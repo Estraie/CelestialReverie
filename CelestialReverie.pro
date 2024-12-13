@@ -19,7 +19,8 @@ SOURCES += \
     src/simulation/celestial_system.cpp \
     src/simulation/celestial_reverie.cpp \
     src/simulation/simulate_algorithm.cpp \
-    src/rendering/celestialGLWidget.cpp
+    src/rendering/celestialGLWidget.cpp \
+    src/simulation/simulate_algorithm_parallel.cpp
     
 include(include/include.pri)
     
