@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->horizontal_slider, &QSlider::sliderReleased, this, &MainWindow::time_change);
     connect(ui->horizontal_slider, &QSlider::valueChanged, this, &MainWindow::slider_value_change);
     connect(ui->actionSave, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::save_csv);
+    connect(ui->actionLoad, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::load_csv);
     connect(ui->actionBrute_Force, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_pure_newtonian);
     connect(ui->actionBarnes_Hut, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_barnes_hut);
 }

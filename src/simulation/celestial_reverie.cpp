@@ -106,7 +106,7 @@ void celestial_reverie::set_save_interval(double save_interval) {
 
 celestial_system* celestial_reverie::simulate() {
     if (frames.empty() || current_time - frames.back()->time > save_interval) {
-        frames.push_back(current_frame->duplicate());
+        add_buffer();
     }
     sim_algorithm->simulate(current_frame);
     upd_algorithm->update(current_frame, time_step);
@@ -149,6 +149,14 @@ celestial_system* celestial_reverie::back_to(double time) {
 
 celestial_system* celestial_reverie::get_current_frame() {
     return current_frame;
+}
+
+void celestial_reverie::clear_buffer() {
+    frames.clear();
+}
+
+void celestial_reverie::add_buffer() {
+    frames.push_back(current_frame->duplicate());
 }
 
 // Template implementations

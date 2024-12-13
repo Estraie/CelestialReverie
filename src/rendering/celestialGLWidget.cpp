@@ -373,7 +373,74 @@ void celestial_gl_widget::save_csv() {
 }
 
 void celestial_gl_widget::load_csv() {
+    if(timer->isActive()) {
+        timer->stop();
+    }
+    QString filename = QFileDialog::getOpenFileName(
+        this,
+        "Open celestial system",
+        ".",
+        "Comma Separated Values(*.csv)"
+    );
 
+    if (filename.isEmpty()) {
+        qDebug() << "Cancelled loading.";
+        return;
+    }
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::critical(nullptr, "Error", "Cannot read target file!");
+        return;
+    }
+
+    QTextStream in(&file);
+
+    int sz = sim.get_current_frame()->bodies.size();
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line.trimmed().isEmpty()) continue; // Skip empty lines
+
+        QStringList tokens = line.split(',');
+        if (tokens.size() != 8) {
+            QMessageBox::critical(nullptr, "Error", "Invalid file format!");
+            return;
+        }
+
+        bool ok = true;
+        double mass = tokens[0].toDouble(&ok); if (!ok) break;
+        double radius = tokens[1].toDouble(&ok); if (!ok) break;
+        double posX = tokens[2].toDouble(&ok); if (!ok) break;
+        double posY = tokens[3].toDouble(&ok); if (!ok) break;
+        double posZ = tokens[4].toDouble(&ok); if (!ok) break;
+        double velX = tokens[5].toDouble(&ok); if (!ok) break;
+        double velY = tokens[6].toDouble(&ok); if (!ok) break;
+        double velZ = tokens[7].toDouble(&ok); if (!ok) break;
+
+        celestial_body* body = new celestial_body(mass, radius, {posX, posY, posZ}, {velX, velY, velZ});
+        sim.get_current_frame()->add_body(body);
+    }
+
+    if (in.status() != QTextStream::Ok) {
+        QMessageBox::critical(nullptr, "Error", "Failed to parse the file!");
+        return;
+    }
+
+    file.close();
+
+    for(int i = 0; i < sz; i++) {
+        delete sim.get_current_frame()->bodies[i];
+    }
+    sim.get_current_frame()->bodies.erase(
+        sim.get_current_frame()->bodies.begin(),
+        sim.get_current_frame()->bodies.begin() + sz
+    );
+    sim.get_current_frame()->set_time(0);
+    sim.clear_buffer();
+    sim.add_buffer();
+
+    update();
+    QMessageBox::information(nullptr, "Information", "Successfully loaded!");
 }
 
 void celestial_gl_widget::set_float(const char* name, float value) {
