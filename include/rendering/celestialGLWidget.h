@@ -65,7 +65,9 @@ signals:
 public slots:
     void update_sim();
     void set_pure_newtonian();
+    void set_pure_newtonian_parallel();
     void set_barnes_hut();
+    void set_barnes_hut_parallel();
     void toggle_simulation();
     void load_csv();
     void save_csv();

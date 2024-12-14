@@ -33,3 +33,41 @@ void pure_newtonian_parallel::simulate(celestial_system*& sys) {
         sys->bodies[i]->acceleration = local_accelerations[i];
     }
 }
+
+barnes_hut_parallel& barnes_hut_parallel::get_instance() {
+    static barnes_hut_parallel instance;
+    return instance;
+}
+
+void barnes_hut_parallel::simulate(celestial_system*& sys) {
+    node* root = new node();
+    upper_bound = glm::dvec3(-std::numeric_limits<double>::infinity());
+    lower_bound = glm::dvec3(std::numeric_limits<double>::infinity());
+
+    #pragma omp parallel for reduction(max : upper_bound.x, upper_bound.y, upper_bound.z) \
+                             reduction(min : lower_bound.x, lower_bound.y, lower_bound.z)
+    for(size_t i = 0; i < sys->bodies.size(); i++) {
+        const auto& body = sys->bodies[i];
+        upper_bound.x = std::max(upper_bound.x, body->position.x);
+        upper_bound.y = std::max(upper_bound.y, body->position.y);
+        upper_bound.z = std::max(upper_bound.z, body->position.z);
+        lower_bound.x = std::min(lower_bound.x, body->position.x);
+        lower_bound.y = std::min(lower_bound.y, body->position.y);
+        lower_bound.z = std::min(lower_bound.z, body->position.z);
+        sys->bodies[i]->acceleration = glm::dvec3(0.0);
+    }
+
+    root->center = (upper_bound + lower_bound) / 2.0;
+    root->semi_edge = (upper_bound - lower_bound) / 2.0;
+
+    for(size_t i = 0; i < sys->bodies.size(); i++) {
+        add_body(root, sys->bodies[i]);
+    }
+
+    #pragma omp parallel for
+    for(size_t i = 0; i < sys->bodies.size(); i++) {
+        add_gravity(root, sys->bodies[i]);
+    }
+
+    delete root;
+}

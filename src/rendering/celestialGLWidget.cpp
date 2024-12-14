@@ -87,7 +87,7 @@ void celestial_gl_widget::initializeGL() {
     celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
     celestial_body* b = new celestial_body(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
     celestial_body* c = new celestial_body(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
-    celestial_body* d = new celestial_body(80.0e10, 350, {0, -10, -500}, {1, 0, -5000});
+    celestial_body* d = new celestial_body(80.0e10, 3.5, {0, -10, -60}, {1, 0, 0.5});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
@@ -312,8 +312,16 @@ void celestial_gl_widget::set_pure_newtonian() {
     sim.set_simulate_algorithm<pure_newtonian>();
 }
 
+void celestial_gl_widget::set_pure_newtonian_parallel() {
+    sim.set_simulate_algorithm<pure_newtonian_parallel>();
+}
+
 void celestial_gl_widget::set_barnes_hut() {
     sim.set_simulate_algorithm<barnes_hut>();
+}
+
+void celestial_gl_widget::set_barnes_hut_parallel() {
+    sim.set_simulate_algorithm<barnes_hut_parallel>();
 }
 
 void celestial_gl_widget::toggle_simulation(){

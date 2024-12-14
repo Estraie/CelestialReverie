@@ -110,17 +110,17 @@ glm::dvec3 barnes_hut::get_next_center(node* node, int direction) {
 
 void barnes_hut::add_body(node* root, celestial_body* body) {
     int direction;
-    std::cout << "Adding " << *body << "\n";
+    // std::cout << "Adding " << *body << "\n";
     // Case NULL node
     if(root->mass == 0.0) {
-        std::cout << "Adding to current Node\n";
+        // std::cout << "Adding to current Node\n";
         root->body = body;
         root->mass = body->mass;
         root->barycenter = body->position;
         return;
     }
     else {
-        std::cout << "Adding to current Node\n";
+        // std::cout << "Adding to current Node\n";
         if(root->body != NULL) {
             direction = get_direction(root->body->position, root->center);
             if(root->children[direction] == NULL) {

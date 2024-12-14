@@ -1,12 +1,13 @@
 #ifndef CELESTIAL_REVERIE_H
 #define CELESTIAL_REVERIE_H
 
-#include <simulation/celestial_body.h>
-#include <simulation/celestial_system.h>
-#include <simulation/simulate_algorithm.h>
-#include <string>
-#include <vector>
-#include <glm/glm.hpp>
+# include <simulation/celestial_body.h>
+# include <simulation/celestial_system.h>
+# include <simulation/simulate_algorithm.h>
+# include <simulation/simulate_algorithm_parallel.h>
+# include <string>
+# include <vector>
+# include <glm/glm.hpp>
 
 class celestial_reverie {
 private:

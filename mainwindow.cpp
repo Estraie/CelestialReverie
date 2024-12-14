@@ -21,16 +21,27 @@ MainWindow::MainWindow(QWidget *parent)
     QFont customFont(fontFamily, 8);
     QApplication::setFont(customFont);
 
+    // Timer
     ui->celestial_widget->timer = new QTimer(ui->celestial_widget);
     connect(ui->celestial_widget->timer, SIGNAL(timeout()), this, SLOT(update_simulation()));
     ui->celestial_widget->timer->start(20);
+
+    // Toggle Simulation
     connect(ui->toggle_button, &QPushButton::clicked, ui->celestial_widget, &celestial_gl_widget::toggle_simulation);
+
+    // Time Change
     connect(ui->horizontal_slider, &QSlider::sliderReleased, this, &MainWindow::time_change);
-    connect(ui->horizontal_slider, &QSlider::valueChanged, this, &MainWindow::slider_value_change);
+//    connect(ui->horizontal_slider, &QSlider::valueChanged, this, &MainWindow::slider_value_change);
+
+    // Save and Load
     connect(ui->actionSave, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::save_csv);
     connect(ui->actionLoad, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::load_csv);
+
+    // Simulation Algorithm
     connect(ui->actionBrute_Force, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_pure_newtonian);
+    connect(ui->actionParallel_Brute_Force, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_pure_newtonian_parallel);
     connect(ui->actionBarnes_Hut, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_barnes_hut);
+    connect(ui->actionParallel_Barnes_Hut, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_barnes_hut_parallel);
 }
 
 void MainWindow::time_change(){

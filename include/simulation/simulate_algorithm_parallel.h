@@ -10,3 +10,12 @@ public:
     virtual void simulate(celestial_system*& system) override;
     static pure_newtonian_parallel& get_instance();
 };
+
+class barnes_hut_parallel : public barnes_hut {
+protected:
+    static barnes_hut_parallel instance;
+    barnes_hut_parallel() = default;
+public:
+    virtual void simulate(celestial_system*& system) override;
+    static barnes_hut_parallel& get_instance();
+};
