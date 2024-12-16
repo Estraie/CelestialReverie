@@ -2,6 +2,8 @@
 
 // # include <shader.h>
 
+const int MAX_LIGHTS = 10;
+
 const char* vertex_shader = 
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;"
@@ -28,17 +30,77 @@ const char* fragment_shader =
     "in vec2 TexCoords;"
     "in vec3 WorldPos;"
     "in vec3 Normal;"
+    "const int MAX_LIGHTS = 10;"
+    "uniform int num_lights;"
+    "uniform vec3 light_positions[MAX_LIGHTS];"
+    "uniform vec3 light_colors[MAX_LIGHTS];"
     "uniform vec3 albedo;"
     "uniform float ao;"
     "uniform vec3 camPos;"
+    "uniform vec3 vEmission;"
     "const float PI = 3.14159265359;"
+    "float distribution_ggx(vec3 N, vec3 H, float roughness)"
+    "{"
+    "    float a = roughness * roughness;"
+    "    float a2 = a * a;"
+    "    float NdotH = max(dot(N, H), 0.0);"
+    "    float NdotH2 = NdotH * NdotH;"
+    "    float nom = a2;"
+    "    float denom = (NdotH2 * (a2 - 1.0) + 1.0);"
+    "    denom = PI * denom * denom;"
+    "    return nom / denom;"
+    "}"
+    "float geometry_schlick_ggx(float NdotV, float roughness)"
+    "{"
+    "    float r = (roughness + 1.0);"
+    "    float k = (r * r) / 8.0;"
+    "    float nom = NdotV;"
+    "    float denom = NdotV * (1.0 - k) + k;"
+    "    return nom / denom;"
+    "}"
+    "float geometry_smith(vec3 N, vec3 V, vec3 L, float roughness)"
+    "{"
+    "    float NdotV = max(dot(N, V), 0.0);"
+    "    float NdotL = max(dot(N, L), 0.0);"
+    "    float ggx2 = geometry_schlick_ggx(NdotV, roughness);"
+    "    float ggx1 = geometry_schlick_ggx(NdotL, roughness);"
+    "    return ggx1 * ggx2;"
+    "}"
+    "vec3 fresnel_schlick(float cos_theta, vec3 F0)"
+    "{"
+    "    return F0 + (1.0 - F0) * pow(clamp(1.0 - cos_theta, 0.0, 1.0), 5.0);"
+    "}"
+    "vec3 calculate_lighting(vec3 N, vec3 V, vec3 L, vec3 albedo, float roughness, vec3 F0, float ao)"
+    "{"
+    "    vec3 H = normalize(V + L);"
+    "    float NDF = distribution_ggx(N, H, roughness);"
+    "    float G = geometry_smith(N, V, L, roughness);"
+    "    vec3 F = fresnel_schlick(max(dot(H, V), 0.0), F0);"
+    "    vec3 kS = F;"
+    "    vec3 kD = vec3(1.0) - kS;"
+    "    kD *= 1.0;"
+    "    vec3 numerator = NDF * G * F;"
+    "    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);"
+    "    vec3 specular = numerator / max(denominator, 0.0001);"
+    "    vec3 diffuse = albedo / PI;"
+    "    return (kD * diffuse + specular) * light_colors[0] * max(dot(N, L), 0.0);"
+    "}"
     "void main()"
     "{"
     "   vec3 N = normalize(Normal);"
     "   vec3 V = normalize(camPos - WorldPos);"
-    "   vec3 ambient = vec3(0.3) * albedo * ao;"
-    "   vec3 diffuse = max(dot(N, V), 0.0) * albedo;"
-    "   vec3 color = ambient + diffuse;"
+    "   vec3 F0 = vec3(0.04);"
+    "   F0 = mix(F0, albedo, 0.0);"
+    "   vec3 result = vec3(0.0);"
+    "   for(int i = 0; i < num_lights; ++i) {"
+    "       vec3 L = normalize(light_positions[i] - WorldPos);"
+    "       result += calculate_lighting(N, V, L, albedo, 1.0, F0, ao);"
+    "   }"
+    "   vec3 ambient = vec3(0.03) * albedo * ao;"
+    // "   vec3 diffuse = max(dot(N, V), 0.0) * albedo;"
+    "   vec3 color = ambient + result + max(dot(N, V), 0.0) * vEmission;"
+    "   color = color / (color + vec3(1.0));"
+    "   color = pow(color, vec3(1.0/2.2));"
     "   FragColor = vec4(color, 1.0);"
     "}"
     ;
@@ -85,9 +147,9 @@ void celestial_gl_widget::initializeGL() {
 
     // _______________________________ Initialize the Simulation _______________________________
     celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
-    celestial_body* b = new celestial_body(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
-    celestial_body* c = new celestial_body(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
-    celestial_body* d = new celestial_body(80.0e10, 3.5, {0, -10, -60}, {1, 0, 0.5});
+    celestial_body* b = new star(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
+    celestial_body* c = new planet(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
+    celestial_body* d = new star(80.0e10, 3.5, {0, -10, -20}, {1, 0, 0.5});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
@@ -99,7 +161,7 @@ void celestial_gl_widget::initializeGL() {
     std::cout << "Initialized!\n";
 
     // _______________________________   Initialize the Camera   _______________________________
-    camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    camera = Camera(glm::vec3(0.0f, 0.0f, 50.0f));
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)width() / (float)height(), 0.1f, 1e8f);
     glUseProgram(shader_program);
     set_mat4("projection", projection);
@@ -130,7 +192,15 @@ void celestial_gl_widget::paintGL() {
 }
 
 void celestial_gl_widget::render_celestial_system(celestial_system* sys) {
-//    std::cout << *sys << std::endl;
+    int num_lights = 0;
+    for (auto& body : sys->bodies) {
+        if(body->is_emissive() && num_lights < MAX_LIGHTS) {
+            set_vec3(("light_positions[" + std::to_string(num_lights) + "]").c_str(), body->position);
+            set_vec3(("light_colors[" + std::to_string(num_lights) + "]").c_str(), body->color);
+            num_lights++;
+        }
+    }
+    set_int("num_lights", num_lights);
     for (auto& body : sys->bodies) {
         render_celestial_body(body);
     }
@@ -142,6 +212,15 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
     model = glm::scale(model, glm::vec3(body->radius));
     set_mat4("model", model);
     set_mat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+
+    set_vec3("albedo", body->color);
+
+    if(body->is_emissive()) {
+        set_vec3("vEmission", body->color);
+    } else {
+        set_vec3("vEmission", glm::vec3(0.0));
+    }
+
     if(celestial_body_vao == 0) {
         glGenVertexArrays(1, &celestial_body_vao);
         glGenBuffers(1, &vbo);
@@ -410,22 +489,33 @@ void celestial_gl_widget::load_csv() {
         if (line.trimmed().isEmpty()) continue; // Skip empty lines
 
         QStringList tokens = line.split(',');
-        if (tokens.size() != 8) {
+        if (tokens.size() != 12) {
             QMessageBox::critical(nullptr, "Error", "Invalid file format!");
             return;
         }
 
         bool ok = true;
-        double mass = tokens[0].toDouble(&ok); if (!ok) break;
-        double radius = tokens[1].toDouble(&ok); if (!ok) break;
-        double posX = tokens[2].toDouble(&ok); if (!ok) break;
-        double posY = tokens[3].toDouble(&ok); if (!ok) break;
-        double posZ = tokens[4].toDouble(&ok); if (!ok) break;
-        double velX = tokens[5].toDouble(&ok); if (!ok) break;
-        double velY = tokens[6].toDouble(&ok); if (!ok) break;
-        double velZ = tokens[7].toDouble(&ok); if (!ok) break;
+        int category = tokens[0].toInt(&ok); if (!ok) break;
+        double mass = tokens[1].toDouble(&ok); if (!ok) break;
+        double radius = tokens[2].toDouble(&ok); if (!ok) break;
+        double posX = tokens[3].toDouble(&ok); if (!ok) break;
+        double posY = tokens[4].toDouble(&ok); if (!ok) break;
+        double posZ = tokens[5].toDouble(&ok); if (!ok) break;
+        double velX = tokens[6].toDouble(&ok); if (!ok) break;
+        double velY = tokens[7].toDouble(&ok); if (!ok) break;
+        double velZ = tokens[8].toDouble(&ok); if (!ok) break;
+        double colorR = tokens[9].toDouble(&ok); if (!ok) break;
+        double colorG = tokens[10].toDouble(&ok); if (!ok) break;
+        double colorB = tokens[11].toDouble(&ok); if (!ok) break;
 
-        celestial_body* body = new celestial_body(mass, radius, {posX, posY, posZ}, {velX, velY, velZ});
+        celestial_body* body;
+        if(category == 0) {
+            body = new celestial_body(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+        } else if(category == 1) {
+            body = new planet(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+        } else if(category == 2) {
+            body = new star(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+        }
         sim.get_current_frame()->add_body(body);
     }
 
@@ -436,21 +526,18 @@ void celestial_gl_widget::load_csv() {
 
     file.close();
 
-    for(int i = 0; i < sz; i++) {
-        delete sim.get_current_frame()->bodies[i];
-    }
-    sim.get_current_frame()->bodies.erase(
-        sim.get_current_frame()->bodies.begin(),
-        sim.get_current_frame()->bodies.begin() + sz
-    );
+    
     sim.get_current_frame()->set_time(0);
-    sim.clear_buffer();
+    sim.clear_buffer(sz);
     sim.add_buffer();
 
     update();
     QMessageBox::information(nullptr, "Information", "Successfully loaded!");
 }
 
+void celestial_gl_widget::set_int(const char* name, int value) {
+    glUniform1i(glGetUniformLocation(shader_program, name), value);
+}
 void celestial_gl_widget::set_float(const char* name, float value) {
     glUniform1f(glGetUniformLocation(shader_program, name), value);
 }

@@ -7,10 +7,11 @@ celestial_body::celestial_body(
     glm::dvec3 position, 
     glm::dvec3 velocity, 
     glm::dvec3 polar_position, 
-    glm::dvec3 acceleration
+    glm::dvec3 acceleration,
+    glm::dvec3 color
 ) : mass(mass), radius(radius), 
     position(position), velocity(velocity), 
-    polar_position(polar_position), acceleration(acceleration) {}
+    polar_position(polar_position), acceleration(acceleration), color(color) {}
 
 celestial_body* celestial_body::duplicate() const {
     celestial_body* new_body = new celestial_body;
@@ -23,11 +24,79 @@ celestial_body* celestial_body::duplicate() const {
     return new_body;
 }
 
-std::ostream& operator<<(std::ostream& os, const celestial_body& body) {
-    os << body.mass << ',';
-    os << body.radius << ',';
-    os << body.position.x << ',' << body.position.y << ',' << body.position.z << ',';
-    os << body.velocity.x << ',' << body.velocity.y << ',' << body.velocity.z << std::endl;
-//    os << std::endl;
+// std::ostream& operator<<(std::ostream& os, const celestial_body& body) {
+//     os << 0 << ',' << body.mass << ',';
+//     os << body.radius << ',';
+//     os << body.position.x << ',' << body.position.y << ',' << body.position.z << ',';
+//     os << body.velocity.x << ',' << body.velocity.y << ',' << body.velocity.z << ',';
+//     os << body.color.x << ',' << body.color.y << ',' << body.color.z << std::endl;
+//     return os;
+// }
+
+std::ostream& celestial_body::operator<<(std::ostream& os) const {
+    os << 0 << ',' << mass << ',';
+    os << radius << ',';
+    os << position.x << ',' << position.y << ',' << position.z << ',';
+    os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << color.x << ',' << color.y << ',' << color.z << std::endl;
     return os;
+}
+
+bool celestial_body::is_emissive() {
+    return false;
+}
+
+// std::ostream& operator<<(std::ostream& os, const planet& body) {
+//     os << 1 << ',' << body.mass << ',';
+//     os << body.radius << ',';
+//     os << body.position.x << ',' << body.position.y << ',' << body.position.z << ',';
+//     os << body.velocity.x << ',' << body.velocity.y << ',' << body.velocity.z << ',';
+//     os << body.color.x << ',' << body.color.y << ',' << body.color.z << std::endl;
+//     return os;
+// }
+
+std::ostream& planet::operator<<(std::ostream& os) const {
+    os << 1 << ',' << mass << ',';
+    os << radius << ',';
+    os << position.x << ',' << position.y << ',' << position.z << ',';
+    os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << color.x << ',' << color.y << ',' << color.z << std::endl;
+    return os;
+}
+
+
+bool planet::is_emissive() {
+    return false;
+}
+
+// std::ostream& operator<<(std::ostream& os, const star& body) {
+//     os << 2 << ',' << body.mass << ',';
+//     os << body.radius << ',';
+//     os << body.position.x << ',' << body.position.y << ',' << body.position.z << ',';
+//     os << body.velocity.x << ',' << body.velocity.y << ',' << body.velocity.z << ',';
+//     os << body.color.x << ',' << body.color.y << ',' << body.color.z << std::endl;
+//     return os;
+// }
+
+std::ostream& star::operator<<(std::ostream& os) const {
+    os << 2 << ',' << mass << ',';
+    os << radius << ',';
+    os << position.x << ',' << position.y << ',' << position.z << ',';
+    os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << color.x << ',' << color.y << ',' << color.z << std::endl;
+    return os;
+}
+
+star::star(
+    double mass, 
+    double radius, 
+    glm::dvec3 position, 
+    glm::dvec3 velocity, 
+    glm::dvec3 polar_position, 
+    glm::dvec3 acceleration,
+    glm::dvec3 color
+) : celestial_body(mass, radius, position, velocity, polar_position, acceleration, color) {}
+
+bool star::is_emissive() {
+    return true;
 }

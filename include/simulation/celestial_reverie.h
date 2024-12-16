@@ -28,7 +28,7 @@ public:
     bool add_celestial_body(celestial_body* body);
     void set_time_step(double time_step);
     void set_save_interval(double save_interval);
-    void clear_buffer();
+    void clear_buffer(int size);
     void add_buffer();
 
     template<typename T>

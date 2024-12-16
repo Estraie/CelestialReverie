@@ -34,7 +34,8 @@ std::ostream& operator<<(std::ostream& os, celestial_system& sys){
 //    os << "***** Celestial System *****" << std::endl;
 //    os << "Time: " << sys.get_time() << std::endl;
     for(auto body : sys.bodies){
-        os << *body;
+        *body << os;
+//        os << *body;
     }
     return os;
 }

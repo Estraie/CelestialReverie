@@ -53,6 +53,7 @@ protected:
     unsigned int celestial_body_vao;
     unsigned int index_count;
 
+    void set_int(const char* name, int value);
     void set_float(const char* name, float value);
     void set_vec3(const char* name, float x, float y, float z);
     void set_vec3(const char* name, const glm::vec3& vec);

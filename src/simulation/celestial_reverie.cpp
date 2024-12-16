@@ -151,7 +151,20 @@ celestial_system* celestial_reverie::get_current_frame() {
     return current_frame;
 }
 
-void celestial_reverie::clear_buffer() {
+void celestial_reverie::clear_buffer(int size) {
+    if(size == 0) {
+        size = current_frame->bodies.size();
+    }
+    for(int i = 0; i < size; i++) {
+        delete current_frame->bodies[i];
+    }
+    current_frame->bodies.erase(
+        current_frame->bodies.begin(),
+        current_frame->bodies.begin() + size
+    );
+    for(celestial_system* frame : frames) {
+        delete frame;
+    }
     frames.clear();
 }
 

@@ -12,7 +12,8 @@ public:
         glm::dvec3 position = glm::dvec3(0), 
         glm::dvec3 velocity = glm::dvec3(0), 
         glm::dvec3 polar_position = glm::dvec3(0), 
-        glm::dvec3 acceleration = glm::dvec3(0)
+        glm::dvec3 acceleration = glm::dvec3(0), 
+        glm::dvec3 color = glm::dvec3(0.2, 0.2, 0.6)
     );
     double mass;
     double radius;
@@ -36,7 +37,31 @@ public:
     glm::f64 &ay = acceleration.y;
     glm::f64 &az = acceleration.z;
 
+    glm::dvec3 color; // RGB color
+
     celestial_body* duplicate() const;
-    friend std::ostream& operator<<(std::ostream& os, const celestial_body& cb);
+    virtual std::ostream& operator<<(std::ostream& os) const;
+    virtual bool is_emissive();
+};
+
+class planet : public celestial_body {
+    using celestial_body::celestial_body;
+    virtual std::ostream& operator<<(std::ostream& os) const;
+    virtual bool is_emissive();
+};
+
+class star : public celestial_body {
+public:
+    star(
+        double mass = 0, 
+        double radius = 0, 
+        glm::dvec3 position = glm::dvec3(0), 
+        glm::dvec3 velocity = glm::dvec3(0), 
+        glm::dvec3 polar_position = glm::dvec3(0), 
+        glm::dvec3 acceleration = glm::dvec3(0), 
+        glm::dvec3 color = glm::dvec3(0.99, 0.95, 0.90)
+    );
+    virtual std::ostream& operator<<(std::ostream& os) const;
+    virtual bool is_emissive();
 };
 #endif // CELESTIAL_BODY_H
