@@ -39,13 +39,14 @@ public:
 
     glm::dvec3 color; // RGB color
 
-    celestial_body* duplicate() const;
+    virtual celestial_body* duplicate() const;
     virtual std::ostream& operator<<(std::ostream& os) const;
     virtual bool is_emissive();
 };
 
 class planet : public celestial_body {
     using celestial_body::celestial_body;
+    virtual celestial_body* duplicate() const;
     virtual std::ostream& operator<<(std::ostream& os) const;
     virtual bool is_emissive();
 };
@@ -59,8 +60,9 @@ public:
         glm::dvec3 velocity = glm::dvec3(0), 
         glm::dvec3 polar_position = glm::dvec3(0), 
         glm::dvec3 acceleration = glm::dvec3(0), 
-        glm::dvec3 color = glm::dvec3(0.99, 0.95, 0.90)
+        glm::dvec3 color = glm::dvec3(0.79, 0.70, 0.30)
     );
+    virtual celestial_body* duplicate() const;
     virtual std::ostream& operator<<(std::ostream& os) const;
     virtual bool is_emissive();
 };

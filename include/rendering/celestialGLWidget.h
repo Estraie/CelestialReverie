@@ -23,6 +23,8 @@
 
 # include <string>
 
+#include "rendering/myglobj.h"
+
 class celestial_gl_widget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 public:
@@ -47,11 +49,13 @@ protected:
     celestial_reverie sim;
     Camera camera;
     unsigned int shader_program;
-    unsigned int vao;
-    unsigned int vbo;
-    unsigned int ebo;
-    unsigned int celestial_body_vao;
+    //unsigned int vao;
+    //unsigned int vbo;
+    //unsigned int ebo;
+    //unsigned int celestial_body_vao;
     unsigned int index_count;
+
+    MyGLObj* globj = 0;
 
     void set_int(const char* name, int value);
     void set_float(const char* name, float value);

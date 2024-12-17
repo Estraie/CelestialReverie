@@ -21,6 +21,7 @@ celestial_body* celestial_body::duplicate() const {
     new_body->velocity = velocity;
     new_body->polar_position = polar_position;
     new_body->acceleration = acceleration;
+    new_body->color = color;
     return new_body;
 }
 
@@ -64,6 +65,17 @@ std::ostream& planet::operator<<(std::ostream& os) const {
     return os;
 }
 
+celestial_body* planet::duplicate() const {
+    planet* new_body = new planet;
+    new_body->mass = mass;
+    new_body->radius = radius;
+    new_body->position = position;
+    new_body->velocity = velocity;
+    new_body->polar_position = polar_position;
+    new_body->acceleration = acceleration;
+    new_body->color = color;
+    return new_body;
+}
 
 bool planet::is_emissive() {
     return false;
@@ -96,6 +108,18 @@ star::star(
     glm::dvec3 acceleration,
     glm::dvec3 color
 ) : celestial_body(mass, radius, position, velocity, polar_position, acceleration, color) {}
+
+celestial_body* star::duplicate() const {
+    star* new_body = new star;
+    new_body->mass = mass;
+    new_body->radius = radius;
+    new_body->position = position;
+    new_body->velocity = velocity;
+    new_body->polar_position = polar_position;
+    new_body->acceleration = acceleration;
+    new_body->color = color;
+    return new_body;
+}
 
 bool star::is_emissive() {
     return true;

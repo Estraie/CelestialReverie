@@ -38,6 +38,7 @@ const char* fragment_shader =
     "uniform float ao;"
     "uniform vec3 camPos;"
     "uniform vec3 vEmission;"
+    "uniform float current_time;"
     "const float PI = 3.14159265359;"
     "float distribution_ggx(vec3 N, vec3 H, float roughness)"
     "{"
@@ -85,6 +86,51 @@ const char* fragment_shader =
     "    vec3 diffuse = albedo / PI;"
     "    return (kD * diffuse + specular) * light_colors[0] * max(dot(N, L), 0.0);"
     "}"
+    "float fractal_noise(vec3 p, int octaves, float persistence, float lacunarity) {"
+    "    float value = 0.0;"
+    "    float amplitude = 1.0;"
+    "    float frequency = 1.0;"
+    "    for(int i = 0; i < octaves; i++) {"
+    "        value += amplitude * fract(sin((sin(p.x) + sin(p.y) + sin(p.z) + sin(current_time)) * 100) * 4.5453);"
+    "        amplitude *= persistence;"
+    "        frequency *= lacunarity;"
+    "        p *= frequency;"
+    "    }"
+    "    return value;"
+    "}"
+    "float hash31(vec3 p) {"
+    "    p = fract(p * vec3(452.127, 932.618, 789.233));"
+    "    p += dot(p, p + 123.23);"
+    "    return fract(p.x * p.y * p.z);"
+    "}"
+    "float noise(vec3 p) {"
+    "    vec3 q = floor(p);"
+    "    vec3 f = fract(p);"
+    "    return mix(mix(mix(hash31(q + vec3(0, 0, 0)), hash31(q + vec3(1, 0, 0)), f.x),"
+    "                   mix(hash31(q + vec3(0, 1, 0)), hash31(q + vec3(1, 1, 0)), f.x), f.y),"
+    "               mix(mix(hash31(q + vec3(0, 0, 1)), hash31(q + vec3(1, 0, 1)), f.x),"
+    "                   mix(hash31(q + vec3(0, 1, 1)), hash31(q + vec3(1, 1, 1)), f.x), f.y),"
+    "               f.z);"
+    "}"
+    "float fbm(vec3 p) {"
+    "    float f = 0.;"
+    "    f +=      .5 * noise(p);"
+    "    f +=     .25 * noise(p * 2.);"
+    "    f +=    .125 * noise(p * 4.);"
+    "    f +=   .0625 * noise(p * 8.);"
+    "    f +=  .03125 * noise(p * 16.);"
+    "    return f;"
+    "}"
+    "float func(vec3 p) {"
+    "    vec3 timeOffset = vec3(sin(current_time * 1.8), cos(current_time * 1.8), sin(current_time * 1.5));"
+    "    return fbm(timeOffset + p * fbm(p + .2 * current_time) + noise(p + noise(p + noise(p))));"
+    "}"
+    "vec3 my_render(vec3 p) {"
+    "   vec3 bgEmission = vec3(1.0);"
+    "   float k = pow(func(9.0 * p), 1.2);"
+    "   vec3 color = mix(bgEmission, vEmission, vec3(k));"
+    "   return color;"
+    "}"
     "void main()"
     "{"
     "   vec3 N = normalize(Normal);"
@@ -98,10 +144,25 @@ const char* fragment_shader =
     "   }"
     "   vec3 ambient = vec3(0.03) * albedo * ao;"
     // "   vec3 diffuse = max(dot(N, V), 0.0) * albedo;"
-    "   vec3 color = ambient + result + max(dot(N, V), 0.0) * vEmission;"
+    "   vec3 color = ambient + result;"
     "   color = color / (color + vec3(1.0));"
     "   color = pow(color, vec3(1.0/2.2));"
-    "   FragColor = vec4(color, 1.0);"
+    "   float opacity = 1.0;"
+    "   if(vEmission.x != 0.0 || vEmission.y != 0.0 || vEmission.z != 0.0) {"
+    "       color = my_render(Normal);"
+    // "       vec3 bgEmission = vec3(1.0);"
+    // "       float k = pow(func(9.0 * N), 1.2);"
+    // "       color = mix(bgEmission, color, vec3(k));"
+    // "       float cosine = dot(N, V);"
+    // "       color = max(1.0 - cosine * (1.0 - cosine), 0.0) * vEmission;"
+    // "       color *= fractal_noise((N) * 0.01, 6, 0.2, 0.5) * 0.5 + 0.5;"
+//    "       float alpha = 0.5;"
+//    "       float halo = exp(-alpha * cosine * cosine);"
+//    "       color += halo * 1.0;"
+//    "       color = color / (color + vec3(1.0));"
+//    "       color = pow(color, vec3(1.0/2.2));"
+    "   }"
+    "   FragColor = vec4(color, opacity);"
     "}"
     ;
 
@@ -143,7 +204,7 @@ void celestial_gl_widget::initializeGL() {
     glEnable(GL_DEPTH_TEST);
 
     // _______________________________Initialize VAO, VBO and EBO_______________________________
-    vao = vbo = ebo = celestial_body_vao = 0;
+    //vao = vbo = ebo = celestial_body_vao = 0;
 
     // _______________________________ Initialize the Simulation _______________________________
     celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
@@ -193,6 +254,7 @@ void celestial_gl_widget::paintGL() {
 
 void celestial_gl_widget::render_celestial_system(celestial_system* sys) {
     int num_lights = 0;
+    set_float("current_time", sys->time);
     for (auto& body : sys->bodies) {
         if(body->is_emissive() && num_lights < MAX_LIGHTS) {
             set_vec3(("light_positions[" + std::to_string(num_lights) + "]").c_str(), body->position);
@@ -221,6 +283,70 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
         set_vec3("vEmission", glm::vec3(0.0));
     }
 
+    if(globj == 0) {
+        globj = new MyGLObj(this);
+        std::vector<glm::vec3> positions;
+        std::vector<glm::vec3> normals;
+        std::vector<glm::vec2> texCoords;
+        std::vector<unsigned int> indices;
+
+        const unsigned int X_SEGMENTS = 64;
+        const unsigned int Y_SEGMENTS = 64;
+        const float PI = 3.14159265359;
+        for(unsigned int i = 0; i <= X_SEGMENTS; ++i) {
+            for(unsigned int j = 0; j <= Y_SEGMENTS; ++j) {
+                float x_seg = (float) i / (float) X_SEGMENTS;
+                float y_seg = (float) j / (float) Y_SEGMENTS;
+                float x_pos = std::cos(2.0f * PI * x_seg) * std::sin(PI * y_seg);
+                float y_pos = std::cos(PI * y_seg);
+                float z_pos = std::sin(2.0f * PI * x_seg) * std::sin(PI * y_seg);
+                positions.push_back(glm::vec3(x_pos, y_pos, z_pos));
+                normals.push_back(glm::vec3(x_pos, y_pos, z_pos));
+            }
+        }
+
+        bool oddRow = false;
+        for(unsigned int j = 0; j < Y_SEGMENTS; ++j) {
+            if (!oddRow) {
+                for(unsigned int i = 0; i <= X_SEGMENTS; ++i) {
+                    indices.push_back(j * (X_SEGMENTS + 1) + i);
+                    indices.push_back((j + 1) * (X_SEGMENTS + 1) + i);
+                }
+            }
+            else {
+                for(int i = X_SEGMENTS; i >= 0; --i) {
+                    indices.push_back((j + 1) * (X_SEGMENTS + 1) + i);
+                    indices.push_back(j * (X_SEGMENTS + 1) + i);
+                }
+            }
+            oddRow = !oddRow;
+        }
+        index_count = indices.size();
+
+        std::vector<float> data;
+        for(unsigned int i = 0; i < positions.size(); ++i) {
+            data.push_back(positions[i].x);
+            data.push_back(positions[i].y);
+            data.push_back(positions[i].z);
+            if(normals.size() > 0) {
+                data.push_back(normals[i].x);
+                data.push_back(normals[i].y);
+                data.push_back(normals[i].z);
+            }
+            if(texCoords.size() > 0) {
+                data.push_back(texCoords[i].x);
+                data.push_back(texCoords[i].y);
+            }
+        }
+        globj->addVBO(data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+        globj->addEBO(indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+        globj->addVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        globj->addVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+        globj->addVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    }
+    globj->drawElements(GL_TRIANGLE_STRIP, index_count, GL_UNSIGNED_INT, 0);
+
+    /*
     if(celestial_body_vao == 0) {
         glGenVertexArrays(1, &celestial_body_vao);
         glGenBuffers(1, &vbo);
@@ -292,6 +418,7 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
     }
     glBindVertexArray(celestial_body_vao);
     glDrawElements(GL_TRIANGLE_STRIP, index_count, GL_UNSIGNED_INT, 0);
+    */
 }
 
 void celestial_gl_widget::resizeGL(int w, int h) {
@@ -314,11 +441,11 @@ void celestial_gl_widget::set_time(double time){
 
 celestial_gl_widget::~celestial_gl_widget() {
     makeCurrent();
-    glDeleteVertexArrays(1, &celestial_body_vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    delete globj;
+    //glDeleteVertexArrays(1, &celestial_body_vao);
+    //glDeleteBuffers(1, &vbo);
+    //glDeleteBuffers(1, &ebo);
     glDeleteProgram(shader_program);
-
     doneCurrent();
 }
 
@@ -336,6 +463,12 @@ void celestial_gl_widget::keyPressEvent(QKeyEvent *event) {
             break;
         case Qt::Key_D:
             camera.ProcessKeyboard(RIGHT, deltaTime);
+            break;
+        case Qt::Key_Space:
+            camera.ProcessKeyboard(UP, deltaTime);
+            break;
+        case Qt::Key_C:
+            camera.ProcessKeyboard(DOWN, deltaTime);
             break;
         case Qt::Key_Alt:
             setCursor(Qt::ArrowCursor);
