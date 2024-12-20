@@ -38,6 +38,8 @@ const char* fragment_shader =
     "uniform float ao;"
     "uniform vec3 camPos;"
     "uniform vec3 vEmission;"
+    "uniform vec3 acceleration;"
+    "uniform vec3 camera_front;"
     "uniform float current_time;"
     "const float PI = 3.14159265359;"
     "float distribution_ggx(vec3 N, vec3 H, float roughness)"
@@ -142,7 +144,7 @@ const char* fragment_shader =
     "       vec3 L = normalize(light_positions[i] - WorldPos);"
     "       result += calculate_lighting(N, V, L, albedo, 1.0, F0, ao);"
     "   }"
-    "   vec3 ambient = vec3(0.03) * albedo * ao;"
+    "   vec3 ambient = vec3(0.01) * albedo * ao;"
     // "   vec3 diffuse = max(dot(N, V), 0.0) * albedo;"
     "   vec3 color = ambient + result;"
     "   color = color / (color + vec3(1.0));"
@@ -150,22 +152,27 @@ const char* fragment_shader =
     "   float opacity = 1.0;"
     "   if(vEmission.x != 0.0 || vEmission.y != 0.0 || vEmission.z != 0.0) {"
     "       color = my_render(Normal);"
-    // "       vec3 bgEmission = vec3(1.0);"
-    // "       float k = pow(func(9.0 * N), 1.2);"
-    // "       color = mix(bgEmission, color, vec3(k));"
-    // "       float cosine = dot(N, V);"
-    // "       color = max(1.0 - cosine * (1.0 - cosine), 0.0) * vEmission;"
-    // "       color *= fractal_noise((N) * 0.01, 6, 0.2, 0.5) * 0.5 + 0.5;"
-//    "       float alpha = 0.5;"
-//    "       float halo = exp(-alpha * cosine * cosine);"
-//    "       color += halo * 1.0;"
-//    "       color = color / (color + vec3(1.0));"
-//    "       color = pow(color, vec3(1.0/2.2));"
+    "   }"
+    "   vec3 proj_acc = normalize(acceleration - dot(acceleration, camera_front) * camera_front);"
+    "   vec3 proj_N = normalize(N - dot(N, camera_front) * camera_front);"
+    "   if(dot(proj_acc, proj_N) > 0.99) {"
+    "       color = vec3(0, 1, 0);"
     "   }"
     "   FragColor = vec4(color, opacity);"
     "}"
     ;
 
+// "       vec3 bgEmission = vec3(1.0);"
+// "       float k = pow(func(9.0 * N), 1.2);"
+// "       color = mix(bgEmission, color, vec3(k));"
+// "       float cosine = dot(N, V);"
+// "       color = max(1.0 - cosine * (1.0 - cosine), 0.0) * vEmission;"
+// "       color *= fractal_noise((N) * 0.01, 6, 0.2, 0.5) * 0.5 + 0.5;"
+//    "       float alpha = 0.5;"
+//    "       float halo = exp(-alpha * cosine * cosine);"
+//    "       color += halo * 1.0;"
+//    "       color = color / (color + vec3(1.0));"
+//    "       color = pow(color, vec3(1.0/2.2));"
 
 celestial_gl_widget::celestial_gl_widget(QWidget* parent) : QOpenGLWidget(parent){}
 
@@ -276,6 +283,8 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
     set_mat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 
     set_vec3("albedo", body->color);
+    set_vec3("acceleration", body->acceleration);
+    set_vec3("camera_front", camera.Front);
 
     if(body->is_emissive()) {
         set_vec3("vEmission", body->color);
@@ -622,7 +631,7 @@ void celestial_gl_widget::load_csv() {
         if (line.trimmed().isEmpty()) continue; // Skip empty lines
 
         QStringList tokens = line.split(',');
-        if (tokens.size() != 12) {
+        if (tokens.size() != 15) {
             QMessageBox::critical(nullptr, "Error", "Invalid file format!");
             return;
         }
@@ -637,17 +646,20 @@ void celestial_gl_widget::load_csv() {
         double velX = tokens[6].toDouble(&ok); if (!ok) break;
         double velY = tokens[7].toDouble(&ok); if (!ok) break;
         double velZ = tokens[8].toDouble(&ok); if (!ok) break;
-        double colorR = tokens[9].toDouble(&ok); if (!ok) break;
-        double colorG = tokens[10].toDouble(&ok); if (!ok) break;
-        double colorB = tokens[11].toDouble(&ok); if (!ok) break;
+        double accX = tokens[9].toDouble(&ok); if (!ok) break;
+        double accY = tokens[10].toDouble(&ok); if (!ok) break;
+        double accZ = tokens[11].toDouble(&ok); if (!ok) break;
+        double colorR = tokens[12].toDouble(&ok); if (!ok) break;
+        double colorG = tokens[13].toDouble(&ok); if (!ok) break;
+        double colorB = tokens[14].toDouble(&ok); if (!ok) break;
 
         celestial_body* body;
         if(category == 0) {
-            body = new celestial_body(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+            body = new celestial_body(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {accX, accY, accZ}, {colorR, colorG, colorB});
         } else if(category == 1) {
-            body = new planet(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+            body = new planet(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {accX, accY, accZ}, {colorR, colorG, colorB});
         } else if(category == 2) {
-            body = new star(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {colorR, colorG, colorB});
+            body = new star(mass, radius, {posX, posY, posZ}, {velX, velY, velZ}, {accX, accY, accZ}, {colorR, colorG, colorB});
         }
         sim.get_current_frame()->add_body(body);
     }

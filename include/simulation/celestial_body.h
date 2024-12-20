@@ -11,7 +11,7 @@ public:
         double radius = 0, 
         glm::dvec3 position = glm::dvec3(0), 
         glm::dvec3 velocity = glm::dvec3(0), 
-        glm::dvec3 polar_position = glm::dvec3(0), 
+        // glm::dvec3 polar_position = glm::dvec3(0), 
         glm::dvec3 acceleration = glm::dvec3(0), 
         glm::dvec3 color = glm::dvec3(0.2, 0.2, 0.6)
     );
@@ -58,7 +58,7 @@ public:
         double radius = 0, 
         glm::dvec3 position = glm::dvec3(0), 
         glm::dvec3 velocity = glm::dvec3(0), 
-        glm::dvec3 polar_position = glm::dvec3(0), 
+        // glm::dvec3 polar_position = glm::dvec3(0), 
         glm::dvec3 acceleration = glm::dvec3(0), 
         glm::dvec3 color = glm::dvec3(0.79, 0.70, 0.30)
     );

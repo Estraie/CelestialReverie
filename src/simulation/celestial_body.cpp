@@ -6,12 +6,11 @@ celestial_body::celestial_body(
     double radius, 
     glm::dvec3 position, 
     glm::dvec3 velocity, 
-    glm::dvec3 polar_position, 
     glm::dvec3 acceleration,
     glm::dvec3 color
 ) : mass(mass), radius(radius), 
     position(position), velocity(velocity), 
-    polar_position(polar_position), acceleration(acceleration), color(color) {}
+    acceleration(acceleration), color(color) {}
 
 celestial_body* celestial_body::duplicate() const {
     celestial_body* new_body = new celestial_body;
@@ -39,6 +38,7 @@ std::ostream& celestial_body::operator<<(std::ostream& os) const {
     os << radius << ',';
     os << position.x << ',' << position.y << ',' << position.z << ',';
     os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << acceleration.x << ',' << acceleration.y << ',' << acceleration.z << ',';
     os << color.x << ',' << color.y << ',' << color.z << std::endl;
     return os;
 }
@@ -61,6 +61,7 @@ std::ostream& planet::operator<<(std::ostream& os) const {
     os << radius << ',';
     os << position.x << ',' << position.y << ',' << position.z << ',';
     os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << acceleration.x << ',' << acceleration.y << ',' << acceleration.z << ',';
     os << color.x << ',' << color.y << ',' << color.z << std::endl;
     return os;
 }
@@ -95,6 +96,7 @@ std::ostream& star::operator<<(std::ostream& os) const {
     os << radius << ',';
     os << position.x << ',' << position.y << ',' << position.z << ',';
     os << velocity.x << ',' << velocity.y << ',' << velocity.z << ',';
+    os << acceleration.x << ',' << acceleration.y << ',' << acceleration.z << ',';
     os << color.x << ',' << color.y << ',' << color.z << std::endl;
     return os;
 }
@@ -104,10 +106,9 @@ star::star(
     double radius, 
     glm::dvec3 position, 
     glm::dvec3 velocity, 
-    glm::dvec3 polar_position, 
     glm::dvec3 acceleration,
     glm::dvec3 color
-) : celestial_body(mass, radius, position, velocity, polar_position, acceleration, color) {}
+) : celestial_body(mass, radius, position, velocity, acceleration, color) {}
 
 celestial_body* star::duplicate() const {
     star* new_body = new star;

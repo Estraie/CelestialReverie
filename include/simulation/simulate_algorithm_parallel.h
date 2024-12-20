@@ -1,3 +1,6 @@
+#ifndef SIMULATE_ALGORITHM_PARALLEL_H
+#define SIMULATE_ALGORITHM_PARALLEL_H
+
 #include <simulation/simulate_algorithm.h>
 #include <omp.h>
 
@@ -19,3 +22,5 @@ public:
     virtual void simulate(celestial_system*& system) override;
     static barnes_hut_parallel& get_instance();
 };
+
+#endif

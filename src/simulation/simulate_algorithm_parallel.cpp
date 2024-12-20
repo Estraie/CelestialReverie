@@ -17,9 +17,11 @@ void pure_newtonian_parallel::add_gravity(celestial_body*& body, celestial_body*
 
 void pure_newtonian_parallel::simulate(celestial_system*& sys) {
     std::vector<glm::dvec3> local_accelerations(sys->bodies.size(), glm::dvec3(0.0));
+    omp_set_num_threads(10);
 
     #pragma omp parallel for schedule(dynamic)
     for (int i = 0; i < sys->bodies.size(); i++) {
+        // std::cout << "Thread " << omp_get_thread_num() << " processes iteration " << i << ".\n";
         glm::dvec3 local_acceleration(0.0);
         for (int j = 0; j < sys->bodies.size(); j++) {
             if (i != j) {
@@ -43,17 +45,23 @@ void barnes_hut_parallel::simulate(celestial_system*& sys) {
     node* root = new node();
     upper_bound = glm::dvec3(-std::numeric_limits<double>::infinity());
     lower_bound = glm::dvec3(std::numeric_limits<double>::infinity());
+    omp_set_num_threads(10);
 
-    #pragma omp parallel for reduction(max : upper_bound.x, upper_bound.y, upper_bound.z) \
-                             reduction(min : lower_bound.x, lower_bound.y, lower_bound.z)
-    for(size_t i = 0; i < sys->bodies.size(); i++) {
+    #pragma omp parallel for
+    for (size_t i = 0; i < sys->bodies.size(); i++) {
         const auto& body = sys->bodies[i];
-        upper_bound.x = std::max(upper_bound.x, body->position.x);
-        upper_bound.y = std::max(upper_bound.y, body->position.y);
-        upper_bound.z = std::max(upper_bound.z, body->position.z);
-        lower_bound.x = std::min(lower_bound.x, body->position.x);
-        lower_bound.y = std::min(lower_bound.y, body->position.y);
-        lower_bound.z = std::min(lower_bound.z, body->position.z);
+
+        #pragma omp critical
+        {
+            upper_bound.x = std::max(upper_bound.x, body->position.x);
+            upper_bound.y = std::max(upper_bound.y, body->position.y);
+            upper_bound.z = std::max(upper_bound.z, body->position.z);
+            lower_bound.x = std::min(lower_bound.x, body->position.x);
+            lower_bound.y = std::min(lower_bound.y, body->position.y);
+            lower_bound.z = std::min(lower_bound.z, body->position.z);
+        }
+
+        // Reset acceleration (no reduction needed)
         sys->bodies[i]->acceleration = glm::dvec3(0.0);
     }
 
