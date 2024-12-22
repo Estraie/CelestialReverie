@@ -1,0 +1,3 @@
+D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build/CMakeFiles/Glaxy_Engine.dir
+D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build/CMakeFiles/edit_cache.dir
+D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build/CMakeFiles/rebuild_cache.dir

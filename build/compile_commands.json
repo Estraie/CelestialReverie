@@ -1,0 +1,32 @@
+[
+{
+  "directory": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build",
+  "command": "C:\\MinGW\\bin\\g++.exe  @CMakeFiles/Glaxy_Engine.dir/includes_CXX.rsp  -g -O0 -Wall -g -o CMakeFiles\\Glaxy_Engine.dir\\src\\simulation\\test_simulation.cpp.obj -c D:\\Code\\GlaxyEngine\\CelestialReverie\\test1\\CelestialReverie\\src\\simulation\\test_simulation.cpp",
+  "file": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/src/simulation/test_simulation.cpp",
+  "output": "CMakeFiles/Glaxy_Engine.dir/src/simulation/test_simulation.cpp.obj"
+},
+{
+  "directory": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build",
+  "command": "C:\\MinGW\\bin\\g++.exe  @CMakeFiles/Glaxy_Engine.dir/includes_CXX.rsp  -g -O0 -Wall -g -o CMakeFiles\\Glaxy_Engine.dir\\src\\simulation\\celestial_body.cpp.obj -c D:\\Code\\GlaxyEngine\\CelestialReverie\\test1\\CelestialReverie\\src\\simulation\\celestial_body.cpp",
+  "file": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/src/simulation/celestial_body.cpp",
+  "output": "CMakeFiles/Glaxy_Engine.dir/src/simulation/celestial_body.cpp.obj"
+},
+{
+  "directory": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build",
+  "command": "C:\\MinGW\\bin\\g++.exe  @CMakeFiles/Glaxy_Engine.dir/includes_CXX.rsp  -g -O0 -Wall -g -o CMakeFiles\\Glaxy_Engine.dir\\src\\simulation\\celestial_reverie.cpp.obj -c D:\\Code\\GlaxyEngine\\CelestialReverie\\test1\\CelestialReverie\\src\\simulation\\celestial_reverie.cpp",
+  "file": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/src/simulation/celestial_reverie.cpp",
+  "output": "CMakeFiles/Glaxy_Engine.dir/src/simulation/celestial_reverie.cpp.obj"
+},
+{
+  "directory": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build",
+  "command": "C:\\MinGW\\bin\\g++.exe  @CMakeFiles/Glaxy_Engine.dir/includes_CXX.rsp  -g -O0 -Wall -g -o CMakeFiles\\Glaxy_Engine.dir\\src\\simulation\\celestial_system.cpp.obj -c D:\\Code\\GlaxyEngine\\CelestialReverie\\test1\\CelestialReverie\\src\\simulation\\celestial_system.cpp",
+  "file": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/src/simulation/celestial_system.cpp",
+  "output": "CMakeFiles/Glaxy_Engine.dir/src/simulation/celestial_system.cpp.obj"
+},
+{
+  "directory": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/build",
+  "command": "C:\\MinGW\\bin\\g++.exe  @CMakeFiles/Glaxy_Engine.dir/includes_CXX.rsp  -g -O0 -Wall -g -o CMakeFiles\\Glaxy_Engine.dir\\src\\simulation\\simulate_algorithm.cpp.obj -c D:\\Code\\GlaxyEngine\\CelestialReverie\\test1\\CelestialReverie\\src\\simulation\\simulate_algorithm.cpp",
+  "file": "D:/Code/GlaxyEngine/CelestialReverie/test1/CelestialReverie/src/simulation/simulate_algorithm.cpp",
+  "output": "CMakeFiles/Glaxy_Engine.dir/src/simulation/simulate_algorithm.cpp.obj"
+}
+]

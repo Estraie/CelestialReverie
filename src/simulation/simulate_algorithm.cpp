@@ -27,12 +27,46 @@ void forward_euler::update(celestial_body*& body, double dt) {
     body->position += body->velocity * dt;
 }
 
-void forward_euler::update(celestial_system*& sys, double dt) {
+void forward_euler::update(celestial_system*& sys, double dt, 
+                           simulate_algorithm*& sim) {
+    sim->simulate(sys);
     sys->set_time(sys->get_time() + dt);
     for(auto& body : sys->bodies){
         update(body, dt);
     }
 }
+
+implicit_euler& implicit_euler::get_instance() {
+    static implicit_euler instance;
+    return instance;
+}
+
+void implicit_euler::update(celestial_body*& body, double dt) {
+    body->velocity += body->acceleration * dt;
+    body->position += body->velocity * dt;
+}
+
+void implicit_euler::update(celestial_system*& sys, double dt, 
+                            simulate_algorithm*& sim) {
+    
+    sim -> simulate(sys);
+    auto tmp_sys = sys->duplicate();
+
+    sys->set_time(sys->get_time() + dt);
+    for(auto& body : tmp_sys->bodies){
+        update(body, dt);
+    }
+
+    sim -> simulate(tmp_sys);
+
+    for(int i = 0; i < sys->size(); i++){
+        sys->bodies[i]->acceleration = 
+            (sys->bodies[i]->acceleration + tmp_sys->bodies[i]->acceleration);
+        update(sys->bodies[i], dt);
+    }
+
+}
+
 
 // simulate_algorithm::simulate_algorithm(update_algorithm& algorithm) : algorithm(algorithm) {}
 

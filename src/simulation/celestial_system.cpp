@@ -39,3 +39,7 @@ std::ostream& operator<<(std::ostream& os, celestial_system& sys){
     }
     return os;
 }
+
+int celestial_system::size(){
+    return bodies.size();
+}

@@ -7,7 +7,7 @@
 celestial_reverie::celestial_reverie() 
     : current_time(0), time_step(1), save_interval(100) {
     sim_algorithm = &pure_newtonian::get_instance();
-    upd_algorithm = &forward_euler::get_instance();
+    upd_algorithm = &implicit_euler::get_instance();
     current_frame = new celestial_system();
 }
 
@@ -108,8 +108,8 @@ celestial_system* celestial_reverie::simulate() {
     if (frames.empty() || current_time - frames.back()->time > save_interval) {
         add_buffer();
     }
-    sim_algorithm->simulate(current_frame);
-    upd_algorithm->update(current_frame, time_step);
+    //sim_algorithm->simulate(current_frame);
+    upd_algorithm->update(current_frame, time_step, sim_algorithm);
     current_time += time_step;
     return current_frame;
 }

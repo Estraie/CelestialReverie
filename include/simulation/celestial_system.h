@@ -16,5 +16,7 @@ public:
     double get_time();
     celestial_system* duplicate();
     friend std::ostream& operator<<(std::ostream& os, celestial_system& system);
+    
+    int size();
 };
 #endif // CELESTIAL_SYSTEM_H

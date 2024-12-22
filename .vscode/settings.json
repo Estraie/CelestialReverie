@@ -60,6 +60,9 @@
         "xutility": "cpp",
         "glad.h": "c",
         "qopenglfunctions_3_3_core": "cpp",
-        "qopenglwidget": "cpp"
+        "qopenglwidget": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "xstddef": "cpp"
     }
 }
