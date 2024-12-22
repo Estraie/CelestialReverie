@@ -97,6 +97,10 @@ void pure_newtonian::simulate(celestial_system*& system) {
     }
     for(int i = 0; i < system->bodies.size(); i++){
         for(int j = i + 1; j < system->bodies.size(); j++){
+            auto dist_vec = system->bodies[i]->position- system->bodies[j]->position;            
+            if (glm::length(dist_vec) < system->bodies[i]->radius + system->bodies[j]->radius){
+                system->collide(i,j);
+            }            
             add_gravity(system->bodies[i], system->bodies[j]);
         }
     }

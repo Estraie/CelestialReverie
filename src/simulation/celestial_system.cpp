@@ -43,3 +43,24 @@ std::ostream& operator<<(std::ostream& os, celestial_system& sys){
 int celestial_system::size(){
     return bodies.size();
 }
+
+void celestial_system::del_body(celestial_body* body){
+    auto it = bodies.begin();
+    delete body;
+    while (it!= bodies.end() && *it != body) {
+        ++it;
+    }
+    bodies.erase(it);
+}
+
+void celestial_system::collide(int i, int j){
+    
+    auto moment_a = bodies[i]->velocity * bodies[i]->mass;
+    auto moment_b = bodies[j]->velocity * bodies[j]->mass;
+    auto mass = bodies[i]->mass + bodies[j]->mass;
+    auto velocity = (moment_a+moment_b)/mass;
+    del_body(bodies[i]);
+    bodies[j]->velocity = velocity;
+    bodies[j]->mass = mass;
+
+}

@@ -11,12 +11,14 @@ public:
     ~celestial_system();
     std::vector<celestial_body*> bodies;
     void add_body(celestial_body* body);
+    void del_body(celestial_body* body);
     void simulate(double time_step);
     void set_time(double time);
     double get_time();
     celestial_system* duplicate();
     friend std::ostream& operator<<(std::ostream& os, celestial_system& system);
-    
+
     int size();
+    void collide(int i, int j);
 };
 #endif // CELESTIAL_SYSTEM_H
