@@ -63,7 +63,7 @@ void implicit_euler::update(celestial_system*& sys, double dt,
 
     for(size_t i = 0; i < sys->size(); i++){
         sys->bodies[i]->acceleration = 
-            (sys->bodies[i]->acceleration + tmp_sys->bodies[i]->acceleration);
+            (sys->bodies[i]->acceleration + tmp_sys->bodies[i]->acceleration) / 2.0;
         update(sys->bodies[i], dt);
     }
 

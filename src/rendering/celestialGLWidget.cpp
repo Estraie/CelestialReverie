@@ -557,7 +557,7 @@ void celestial_gl_widget::set_no_collision() {
     sim.set_collision_detection<dummy_detection>();
 }
 
-void celestial_gl_widget::set_octal_collision() {
+void celestial_gl_widget::set_octree_collision() {
     sim.set_collision_detection<ocd>();
 }
 

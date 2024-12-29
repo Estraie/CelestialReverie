@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionImplicit_Euler, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_implicit_euler);
     connect(ui->actionSet_Time_Step, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_time_step);
     connect(ui->actionNo_Collision, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_no_collision);
-    connect(ui->actionOCD, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_octal_collision);
+    connect(ui->actionOCD, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_octree_collision);
 }
 
 void MainWindow::time_change(){

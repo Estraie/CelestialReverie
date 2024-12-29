@@ -77,7 +77,7 @@ public slots:
     void set_forward_euler();
     void set_implicit_euler();
     void set_no_collision();
-    void set_octal_collision();
+    void set_octree_collision();
     void set_time_step();
     void toggle_simulation();
     void load_csv();
