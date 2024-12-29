@@ -8,11 +8,12 @@
 # include <QMouseEvent>
 # include <QWheelEvent>
 # include <QFileDialog>
+# include <QInputDialog>
 # include <QMessageBox>
 # include <QDateTime>
 # include <QDebug>
-#include <iostream>
-#include <sstream>
+# include <iostream>
+# include <sstream>
 
 # include <glm/glm.hpp>
 # include <glm/gtc/matrix_transform.hpp>
@@ -73,6 +74,11 @@ public slots:
     void set_pure_newtonian_parallel();
     void set_barnes_hut();
     void set_barnes_hut_parallel();
+    void set_forward_euler();
+    void set_implicit_euler();
+    void set_no_collision();
+    void set_octal_collision();
+    void set_time_step();
     void toggle_simulation();
     void load_csv();
     void save_csv();

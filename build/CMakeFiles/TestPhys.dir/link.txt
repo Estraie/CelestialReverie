@@ -1,3 +1,0 @@
-D:\CMake\bin\cmake.exe -E rm -f CMakeFiles\TestPhys.dir/objects.a
-C:\MinGW\bin\ar.exe qc CMakeFiles\TestPhys.dir/objects.a @CMakeFiles\TestPhys.dir\objects1.rsp
-C:\MinGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\TestPhys.dir/objects.a -Wl,--no-whole-archive -o TestPhys.exe -Wl,--out-implib,libTestPhys.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\TestPhys.dir\linkLibs.rsp

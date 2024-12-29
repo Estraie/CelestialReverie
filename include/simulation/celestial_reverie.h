@@ -15,6 +15,7 @@ private:
     celestial_system* current_frame;
     simulate_algorithm* sim_algorithm;
     update_algorithm* upd_algorithm;
+    collision_detection* cd;
     double current_time;
     double time_step;
     double save_interval;
@@ -27,6 +28,7 @@ public:
     bool dump_celestial_system(const std::string& filename);
     bool add_celestial_body(celestial_body* body);
     void set_time_step(double time_step);
+    double get_time_step();
     void set_save_interval(double save_interval);
     void clear_buffer(int size);
     void add_buffer();
@@ -39,6 +41,11 @@ public:
     template<typename T>
     void set_update_algorithm(){
         upd_algorithm = &T::get_instance();
+    }
+
+    template<typename T>
+    void set_collision_detection(){
+        cd = &T::get_instance();
     }
 
     celestial_system* simulate();

@@ -545,6 +545,37 @@ void celestial_gl_widget::set_barnes_hut_parallel() {
     sim.set_simulate_algorithm<barnes_hut_parallel>();
 }
 
+void celestial_gl_widget::set_forward_euler() {
+    sim.set_update_algorithm<forward_euler>();
+}
+
+void celestial_gl_widget::set_implicit_euler() {
+    sim.set_update_algorithm<implicit_euler>();
+}
+
+void celestial_gl_widget::set_no_collision() {
+    sim.set_collision_detection<dummy_detection>();
+}
+
+void celestial_gl_widget::set_octal_collision() {
+    sim.set_collision_detection<ocd>();
+}
+
+void celestial_gl_widget::set_time_step() {
+    bool ok;
+    double time_step = QInputDialog::getDouble(
+        this, 
+        "Set time step", 
+        "Enter time step:", 
+        sim.get_time_step(), 
+        0.01, 
+        1000000.0, 
+        2, //Number of digits after decimal point
+        &ok
+    );
+    sim.set_time_step(time_step);
+}
+
 void celestial_gl_widget::toggle_simulation(){
     if(timer->isActive()){
         timer->stop();

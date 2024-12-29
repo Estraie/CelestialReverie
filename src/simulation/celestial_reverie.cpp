@@ -8,6 +8,7 @@ celestial_reverie::celestial_reverie()
     : current_time(0), time_step(1), save_interval(100) {
     sim_algorithm = &pure_newtonian::get_instance();
     upd_algorithm = &implicit_euler::get_instance();
+    cd = &dummy_detection::get_instance();
     current_frame = new celestial_system();
 }
 
@@ -100,6 +101,10 @@ void celestial_reverie::set_time_step(double time_step) {
     this->time_step = time_step;
 }
 
+double celestial_reverie::get_time_step() {
+    return time_step;
+}
+
 void celestial_reverie::set_save_interval(double save_interval) {
     this->save_interval = save_interval;
 }
@@ -110,6 +115,8 @@ celestial_system* celestial_reverie::simulate() {
     }
     //sim_algorithm->simulate(current_frame);
     upd_algorithm->update(current_frame, time_step, sim_algorithm);
+    cd->detect(current_frame);
+    // std::cout << current_frame->bodies.size() << " bodies\n";
     current_time += time_step;
     return current_frame;
 }

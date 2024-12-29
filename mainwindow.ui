@@ -85,9 +85,29 @@
     <addaction name="separator"/>
     <addaction name="actionParallel_Brute_Force"/>
     <addaction name="actionParallel_Barnes_Hut"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuUpdate">
+    <property name="title">
+     <string>Update</string>
+    </property>
+    <addaction name="actionForward_Euler_2"/>
+    <addaction name="actionImplicit_Euler"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_Time_Step"/>
+   </widget>
+   <widget class="QMenu" name="menuCollision">
+    <property name="title">
+     <string>Collision</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionNo_Collision"/>
+    <addaction name="actionOCD"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSimulation"/>
+   <addaction name="menuUpdate"/>
+   <addaction name="menuCollision"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSave">
@@ -118,6 +138,36 @@
   <action name="actionParallel_Barnes_Hut">
    <property name="text">
     <string>Parallel Barnes-Hut</string>
+   </property>
+  </action>
+  <action name="actionForward_Euler">
+   <property name="text">
+    <string>Forward Euler</string>
+   </property>
+  </action>
+  <action name="actionForward_Euler_2">
+   <property name="text">
+    <string>Forward Euler</string>
+   </property>
+  </action>
+  <action name="actionImplicit_Euler">
+   <property name="text">
+    <string>Implicit Euler</string>
+   </property>
+  </action>
+  <action name="actionSet_Time_Step">
+   <property name="text">
+    <string>Set Time Step</string>
+   </property>
+  </action>
+  <action name="actionNo_Collision">
+   <property name="text">
+    <string>No Collision</string>
+   </property>
+  </action>
+  <action name="actionOCD">
+   <property name="text">
+    <string>OCD</string>
    </property>
   </action>
  </widget>

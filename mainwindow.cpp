@@ -42,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionParallel_Brute_Force, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_pure_newtonian_parallel);
     connect(ui->actionBarnes_Hut, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_barnes_hut);
     connect(ui->actionParallel_Barnes_Hut, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_barnes_hut_parallel);
+    connect(ui->actionForward_Euler, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_forward_euler);
+    connect(ui->actionImplicit_Euler, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_implicit_euler);
+    connect(ui->actionSet_Time_Step, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_time_step);
+    connect(ui->actionNo_Collision, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_no_collision);
+    connect(ui->actionOCD, &QAction::triggered, ui->celestial_widget, &celestial_gl_widget::set_octal_collision);
 }
 
 void MainWindow::time_change(){

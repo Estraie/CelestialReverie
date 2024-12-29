@@ -63,6 +63,13 @@
         "qopenglwidget": "cpp",
         "fstream": "cpp",
         "sstream": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "chrono": "cpp",
+        "forward_list": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp",
+        "xtree": "cpp"
     }
 }
