@@ -15,29 +15,24 @@ TARGET = CelestialReverie
 SOURCES += \
     include/glm/detail/glm.cpp \
     lib/glad.c \
-    main.cpp \
-    mainwindow.cpp \
-    src/simulation/celestial_body.cpp \
-    src/simulation/celestial_system.cpp \
-    src/simulation/celestial_reverie.cpp \
-    src/simulation/simulate_algorithm.cpp \
-    src/simulation/simulate_algorithm_parallel.cpp \
+    src/GUI/main.cpp \
+    src/GUI/mainwindow.cpp \
     src/rendering/celestialGLWidget.cpp \
     src/rendering/myglobj.cpp
 
     
 include(include/include.pri)
     
-win32: LIBS += -L$$PWD/lib/ -lglfw3 -lgdi32 -lgomp
+win32: LIBS += -L$$PWD/lib/ -lglfw3 -lgdi32 -lgomp -lCelestialReverieLib
 
 HEADERS += \
     include/rendering/camera.h \
     include/rendering/celestialGLWidget.h \
     include/rendering/myglobj.h \
-    mainwindow.h
+    src/GUI/mainwindow.h
 
 FORMS += \
-    mainwindow.ui
+    src/GUI/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
