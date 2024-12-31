@@ -214,14 +214,14 @@ void celestial_gl_widget::initializeGL() {
     //vao = vbo = ebo = celestial_body_vao = 0;
 
     // _______________________________ Initialize the Simulation _______________________________
-    celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
-    celestial_body* b = new star(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
-    celestial_body* c = new planet(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
-    celestial_body* d = new star(80.0e10, 3.5, {0, -10, -20}, {1, 0, 0.5});
+    celestial_body* a = new celestial_body(5.0e8, 0.8, {0.2, 0, -1}, {1, 0.2, 0.05}, {0, 0, 0}, {0.5, 0.5, 0.8});
+    celestial_body* b = new star(6.0e10, 2.5, {-40, 0, -50}, {0, 0, 0});
+    celestial_body* c = new planet(7.0e7, 0.4, {0, 0.5, -1}, {1, 0.5, 0.1}, {0, 0, 0}, {0.5, 0.5, 0.5});
+    // celestial_body* d = new star(80.0e10, 3.5, {0, -10, -20}, {1, 0, 0.5});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
-    sim.add_celestial_body(d);
+    // sim.add_celestial_body(d);
     sim.set_time_step(0.01);
     sim.set_simulate_algorithm<barnes_hut>();
 //    sim.set_simulate_algorithm<pure_newtonian>();
