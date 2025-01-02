@@ -70,6 +70,7 @@
         "numeric": "cpp",
         "ratio": "cpp",
         "variant": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "qkeyevent": "cpp"
     }
 }
