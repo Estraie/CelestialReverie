@@ -14,7 +14,7 @@ The library includes two types of celestial bodies: planets and stars; two updat
 
 ## Environment Setup
 
-This project is developed using Qt Creator 5.0.2 (Qt 5.15.2 with MSVC 2019, 64-bit).  
+This project is developed using Qt Creator 5.0.2 (Qt 5.15.2 with MSVC 2019, 64-bit) on Windows 10.  
 Open the ```CelestialReverieLib.pro``` file in Qt Creator, and click ```Build``` in the lower-left corner to compile the Celestial simulation library. The compiled library file ```libCelestialReverieLib.a``` should be placed manually in the lib directory. This step has already been completed in the project.  
 After completing the previous step, open the ```CelestialReverie.pro``` file in Qt Creator and click ```Build``` in the lower-left corner to compile and run the project. This compilation depends on the library file generated in the previous step. If you prefer not to use the encapsulated library file, you can manually edit the ```CelestialReverie.pro``` file and add the five files from ```src/simulation``` to the ```SOURCES``` variable.
 

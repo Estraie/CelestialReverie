@@ -162,17 +162,6 @@ const char* fragment_shader =
     "}"
     ;
 
-// "       vec3 bgEmission = vec3(1.0);"
-// "       float k = pow(func(9.0 * N), 1.2);"
-// "       color = mix(bgEmission, color, vec3(k));"
-// "       float cosine = dot(N, V);"
-// "       color = max(1.0 - cosine * (1.0 - cosine), 0.0) * vEmission;"
-// "       color *= fractal_noise((N) * 0.01, 6, 0.2, 0.5) * 0.5 + 0.5;"
-//    "       float alpha = 0.5;"
-//    "       float halo = exp(-alpha * cosine * cosine);"
-//    "       color += halo * 1.0;"
-//    "       color = color / (color + vec3(1.0));"
-//    "       color = pow(color, vec3(1.0/2.2));"
 
 celestial_gl_widget::celestial_gl_widget(QWidget* parent) : QOpenGLWidget(parent){}
 
@@ -214,18 +203,18 @@ void celestial_gl_widget::initializeGL() {
     //vao = vbo = ebo = celestial_body_vao = 0;
 
     // _______________________________ Initialize the Simulation _______________________________
-    celestial_body* a = new celestial_body(5.0e8, 0.8, {0.2, 0, -1}, {1, 0.2, 0.05}, {0, 0, 0}, {0.5, 0.5, 0.8});
-    celestial_body* b = new star(6.0e10, 2.5, {-40, 0, -50}, {0, 0, 0});
-    celestial_body* c = new planet(7.0e7, 0.4, {0, 0.5, -1}, {1, 0.5, 0.1}, {0, 0, 0}, {0.5, 0.5, 0.5});
-    // celestial_body* d = new star(80.0e10, 3.5, {0, -10, -20}, {1, 0, 0.5});
+
+    celestial_body* a = new celestial_body(5.0e10, 2.5, {10, 0, -50}, {0, 1, 0});
+    celestial_body* b = new star(6.0e10, 2.5, {-10, 0, -50}, {0, -1, 0});
+    celestial_body* c = new planet(7.0e10, 3, {0, 10, -50}, {-1, 0, 0.5});
+    celestial_body* d = new star(80.0e10, 3.5, {0, -10, -20}, {1, 0, 0.5});
     sim.add_celestial_body(a);
     sim.add_celestial_body(b);
     sim.add_celestial_body(c);
-    // sim.add_celestial_body(d);
+    sim.add_celestial_body(d);
     sim.set_time_step(0.01);
     sim.set_simulate_algorithm<barnes_hut>();
-//    sim.set_simulate_algorithm<pure_newtonian>();
-//    barnes_hut::get_instance();
+
     std::cout << "Initialized!\n";
 
     // _______________________________   Initialize the Camera   _______________________________
@@ -242,9 +231,6 @@ void celestial_gl_widget::initializeGL() {
     setFocusPolicy(Qt::WheelFocus);
     setMouseTracking(true);
 
-//    timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(update_sim()));
-//    timer -> start(20);
 }
 
 void celestial_gl_widget::paintGL() {
@@ -354,80 +340,6 @@ void celestial_gl_widget::render_celestial_body(celestial_body* body) {
         globj->addVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     }
     globj->drawElements(GL_TRIANGLE_STRIP, index_count, GL_UNSIGNED_INT, 0);
-
-    /*
-    if(celestial_body_vao == 0) {
-        glGenVertexArrays(1, &celestial_body_vao);
-        glGenBuffers(1, &vbo);
-        glGenBuffers(1, &ebo);
-        std::vector<glm::vec3> positions;
-        std::vector<glm::vec3> normals;
-        std::vector<glm::vec2> texCoords;
-        std::vector<unsigned int> indices;
-
-        const unsigned int X_SEGMENTS = 64;
-        const unsigned int Y_SEGMENTS = 64;
-        const float PI = 3.14159265359;
-        for(unsigned int i = 0; i <= X_SEGMENTS; ++i) {
-            for(unsigned int j = 0; j <= Y_SEGMENTS; ++j) {
-                float x_seg = (float) i / (float) X_SEGMENTS;
-                float y_seg = (float) j / (float) Y_SEGMENTS;
-                float x_pos = std::cos(2.0f * PI * x_seg) * std::sin(PI * y_seg);
-                float y_pos = std::cos(PI * y_seg);
-                float z_pos = std::sin(2.0f * PI * x_seg) * std::sin(PI * y_seg);
-                positions.push_back(glm::vec3(x_pos, y_pos, z_pos));
-                normals.push_back(glm::vec3(x_pos, y_pos, z_pos));
-            }
-        }
-
-        bool oddRow = false;
-        for(unsigned int j = 0; j < Y_SEGMENTS; ++j) {
-            if (!oddRow) {
-                for(unsigned int i = 0; i <= X_SEGMENTS; ++i) {
-                    indices.push_back(j * (X_SEGMENTS + 1) + i);
-                    indices.push_back((j + 1) * (X_SEGMENTS + 1) + i);
-                }
-            }
-            else {
-                for(int i = X_SEGMENTS; i >= 0; --i) {
-                    indices.push_back((j + 1) * (X_SEGMENTS + 1) + i);
-                    indices.push_back(j * (X_SEGMENTS + 1) + i);
-                }
-            }
-            oddRow = !oddRow;
-        }
-        index_count = indices.size();
-
-        std::vector<float> data;
-        for(unsigned int i = 0; i < positions.size(); ++i) {
-            data.push_back(positions[i].x);
-            data.push_back(positions[i].y);
-            data.push_back(positions[i].z);
-            if(normals.size() > 0) {
-                data.push_back(normals[i].x);
-                data.push_back(normals[i].y);
-                data.push_back(normals[i].z);
-            }
-            if(texCoords.size() > 0) {
-                data.push_back(texCoords[i].x);
-                data.push_back(texCoords[i].y);
-            }
-        }
-        glBindVertexArray(celestial_body_vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    }
-    glBindVertexArray(celestial_body_vao);
-    glDrawElements(GL_TRIANGLE_STRIP, index_count, GL_UNSIGNED_INT, 0);
-    */
 }
 
 void celestial_gl_widget::resizeGL(int w, int h) {
@@ -620,7 +532,6 @@ void celestial_gl_widget::save_csv() {
 
         if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&file);
-//            out << "Sample content.\n";
             out << toQString(*sim.get_current_frame());
             file.close();
             QMessageBox::information(nullptr, "Information", "Successfully saved!");
